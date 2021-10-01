@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Introducing ~ob-dsq~</title>
+<meta name="author" content="Fritz Grabo" />
+<meta name="generator" content="Org Mode" />
+<!-- Stylesheets -->
+<link rel="stylesheet" href="/styles/main.css" />
+<!-- Scripts -->
+<script src="/scripts/main.js"></script>
+<!-- Icons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@fritzgrabo">
+<meta name="twitter:title" content="Introducing ob-dsq">
+<meta name="twitter:description" content="Babel functions for the `dsq` CLI tool by Multiprocess Labs.">
+<meta name="og:title" content="Introducing ob-dsq">
+<meta name="og:description" content="Babel functions for the `dsq` CLI tool by Multiprocess Labs.">
+</head>
+<body>
+<div id="preamble" class="status">
+<p>
+  <a href="/">Fritz Grabo</a> /
+  <a href="/posts/">Posts</a>
+  <a href="/posts/rss.xml">(RSS)</a> /
+  <a href="/about/">About</a>
+</p>
+</div>
+<div id="content" class="content">
+<h1 class="title">Introducing <code>ob-dsq</code>
+<br />
+<span class="subtitle">Published 2022-04-10</span>
+</h1>
+<section id="outline-container-problem-statement" class="outline-2">
+<h2 id="problem-statement">Problem Statement</h2>
+<div class="outline-text-2" id="text-problem-statement">
+<p>
+In my job, I'm part of a team that writes, and operates software.
+The operating part, more so than the writing one, involves working with sets of related data that exist in a variety of places and in a variety of formats:
+there are SQL databases, JSON files, CSV reports, the occasional spreadsheet, data fetched from online APIs, and many more.
+</p>
+
+<p>
+Sometimes, if the usefulness justifies the effort, I manually create a handful of tables in an <a href="https://sqlite.org">SQLite</a> database, write a little code to extract data from various disparate sources into CSV files and then <a href="https://sqlite.org/cli.html#importing_files_as_csv_or_other_formats">import those files into the database</a> so I can run SQL queries against them.
+</p>
+
+<p>
+As I research the data, I copy query results and my related notes into the <a href="https://orgmode.org">Org mode</a> file I use to document my work.
+</p>
+
+<p>
+This gets the job done, but from a workflow perspective, (a) the manual setup of the database as well as (b) the back and forth between SQLite and Org mode are less than perfect.
+</p>
+</div>
+</section>
+<section id="outline-container-off-to-a-great-start-with-dsq" class="outline-2">
+<h2 id="off-to-a-great-start-with-dsq">Off to a great start with <code>dsq</code></h2>
+<div class="outline-text-2" id="text-off-to-a-great-start-with-dsq">
+<p>
+Some weeks ago, the <a href="https://console.dev">console.dev</a> newsletter featured <a href="https://github.com/multiprocessio/dsq"><code>dsq</code></a> by <a href="https://multiprocess.io">Multiprocess Labs</a>: a command line tool that allows for running SQL queries against multiple files of a growing number of supported types as database tables and for joining between them.
+</p>
+
+<p>
+Oh wow, how cool is that!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">$ cat scores.json
+[{<span style="color: #8b2252;">"name"</span>:<span style="color: #8b2252;">"Fritz"</span>, <span style="color: #8b2252;">"score"</span>:12},
+{<span style="color: #8b2252;">"name"</span>:<span style="color: #8b2252;">"Elisabeth"</span>, <span style="color: #8b2252;">"score"</span>:99},
+{<span style="color: #8b2252;">"name"</span>:<span style="color: #8b2252;">"Noah"</span>, <span style="color: #8b2252;">"score"</span>:8},
+{<span style="color: #8b2252;">"name"</span>:<span style="color: #8b2252;">"Sarah"</span>, <span style="color: #8b2252;">"score"</span>:5},
+{<span style="color: #8b2252;">"name"</span>:<span style="color: #8b2252;">"Rainer"</span>, <span style="color: #8b2252;">"score"</span>:9}]
+
+$ dsq scores.json <span style="color: #8b2252;">"SELECT name FROM {} WHERE score &gt; 10"</span>
+[{<span style="color: #8b2252;">"name"</span>:<span style="color: #8b2252;">"Fritz"</span>},
+{<span style="color: #8b2252;">"name"</span>:<span style="color: #8b2252;">"Elisabeth"</span>}]
+</pre>
+</div>
+
+<p>
+I highly recommend checking out its introductory <a href="https://datastation.multiprocess.io/blog/2022-01-11-dsq.html">blog</a> <a href="https://datastation.multiprocess.io/blog/2022-03-23-dsq-0.9.0.html">posts</a> for an in-depth description of <code>dsq</code>'s many features.
+</p>
+
+<p>
+So that takes care of half the problem, right?
+</p>
+</div>
+</section>
+<section id="outline-container-but-wait-there-s-more" class="outline-2">
+<h2 id="but-wait-there-s-more">But wait, there's more!</h2>
+<div class="outline-text-2" id="text-but-wait-there-s-more">
+<p>
+Inspired by its usefulness and the ease of use, I wrote the <a href="https://github.com/fritzgrabo/ob-dsq"><code>ob-dsq</code> Emacs package</a> that integrates <code>dsq</code> with Org mode's <a href="https://orgmode.org/worg/org-contrib/babel/intro.html">Babel system</a> for literate programming and reproducible research.
+</p>
+
+<p>
+<code>ob-dsq</code> provides the expected wrapper around the <code>dsq</code> command line tool with the usual customization options around the presentation of the results, and, much more importantly, it allows for using Org references as data sources and in variable expansion.
+</p>
+
+<p>
+That's a mouthful, so here's a demonstration to illustrate:
+continuing the <code>scores.json</code> example from above, consider this regular Org table called "Flags".
+(Elisabeth's high score looks kind of suspicious, right?)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #b22222;">#+name: Flags</span>
+<span style="color: #193f8f;">| name      | value |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">|-----------+-------|</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Fritz     |       |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Elisabeth | t     |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Noah      |       |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Sarah     |       |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Rainer    |       |</span>
+</pre>
+</div>
+
+<p>
+Let's SQL JOIN this table with <code>scores.json</code> and query for the top three unflagged players, by score.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #b22222;">#+name: Top-3-Players</span>
+<span style="color: #b22222;">#+begin_src dsq :input scores.json Flags
+</span>SELECT scores.name, scores.score
+FROM {0} scores
+INNER JOIN {1} flags ON scores.name = flags.name
+WHERE flags.value != 't'
+ORDER BY scores.score DESC
+LIMIT 3
+<span style="color: #b22222;">#+end_src
+</span>
+<span style="color: #b22222;">#+RESULTS: Top-3-Players</span>
+<span style="color: #193f8f;">| name   | score |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">|--------+-------|</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Fritz  |    12 |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Rainer |     9 |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Noah   |     8 |</span>
+</pre>
+</div>
+
+<p>
+Note how both <code>scores.json</code> and the "Flags" table are listed as input arguments here without much fanfare: if <code>ob-dsq</code> detects an Org reference in its list of inputs, it silently exports that data to a temporary file and passes it to <code>dsq</code>.
+</p>
+
+<p>
+Note also that "Flags" doesn't necessarily need to be an Org <i>table</i>.
+It could also be an Org example, an Org quote, a plain Org list, or, the most powerful option, an Org source block that evaluates to a list, tabular data, or anything else that <code>dsq</code> can handle.
+</p>
+
+<p>
+The possibilities are seemingly endless here: you could do a shell script to grab pod details off of your Kubernetes cluster with <code>kubectl get pods -o json</code>, fetch data from an online API using the <a href="https://github.com/alf/ob-restclient.el"><code>ob-restclient</code> package</a>, or use any one of the <a href="https://melpa.org/#/?q=ob-">dozens of available Org Babel integrations</a>.
+</p>
+
+<p>
+While we're at it, let's use Org source blocks to illustrate Org Babel's variable expansion feature, which <code>ob-dsq</code> supports:
+consider this Org source block called "Disqualified-Players" that dynamically generates a list of names.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #b22222;">#+name: Disqualified-Players</span>
+<span style="color: #b22222;">#+begin_src elisp
+</span>(list <span style="color: #8b2252;">"Fritz"</span> <span style="color: #8b2252;">"Rainer"</span>)
+<span style="color: #b22222;">#+end_src</span>
+</pre>
+</div>
+
+<p>
+Let's inject this list of names into the SQL query using variable expansion in order to filter out disqualified players.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #b22222;">#+name: Winner</span>
+<span style="color: #b22222;">#+begin_src dsq :input scores.json Flags :var names=Disqualified-Players
+</span>SELECT scores.name
+FROM {0} scores
+INNER JOIN {1} flags ON scores.name = flags.name
+WHERE flags.value != 't' AND scores.name NOT IN ($names)
+ORDER BY scores.score DESC
+LIMIT 1
+<span style="color: #b22222;">#+end_src
+</span>
+<span style="color: #b22222;">#+RESULTS: Winner</span>
+<span style="color: #193f8f;">| name |</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">|------|</span><span style="color: #193f8f;">
+</span><span style="color: #193f8f;">| Noah |</span>
+</pre>
+</div>
+
+<p>
+Neat; Congrats, Noah!
+</p>
+</div>
+</section>
+<section id="outline-container-closing-thoughts" class="outline-2">
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<div class="outline-text-2" id="text-closing-thoughts">
+<p>
+This post gave a whirl-wind tour of <code>ob-dsq</code> &#x2013; if you're interested in trying it out yourself, check out the <a href="https://github.com/fritzgrabo/ob-dsq/tree/main/examples">examples in its repo</a> for a more detailed list of features.
+</p>
+
+<p>
+Shoutout and much love to <a href="https://multiprocess.io">Multiprocess Labs</a>, the creators of <code>dsq</code> and its awesome sibling product, <a href="https://datastation.multiprocess.io">DataStation</a>.
+</p>
+
+<p>
+Finally, if you find any of this useful or have ideas on how to make it better, I'd love to <a href="https://www.reddit.com/r/emacs/comments/u1hf9d/ann_obdsqel_use_sql_to_join_and_query_json_csv/">hear from you</a>. Thanks!
+</p>
+</div>
+</section>
+</div>
+<div id="postamble" class="status">
+<p>Published 2022-04-10, last modified 2022-04-10.</p>
+<p>
+  All original content is licensed under a custom <a href="/license/">license</a>.
+</p>
+</div>
+</body>
+</html>

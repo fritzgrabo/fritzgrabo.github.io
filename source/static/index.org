@@ -1,0 +1,13 @@
+#+title: Fritz Grabo
+#+description: The personal website of Fritz Grabo
+
+#+html_head_extra: <meta name="twitter:card" content="summary">
+#+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
+#+html_head_extra: <meta name="twitter:title" content="Fritz Grabo">
+#+html_head_extra: <meta name="twitter:description" content="The personal website of Fritz Grabo.">
+#+html_head_extra: <meta name="og:title" content="Fritz Grabo">
+#+html_head_extra: <meta name="og:description" content="The personal website of Fritz Grabo.">
+
+I'm a self-employed senior software engineer currently living in Krems, Austria ([[./about/index.org][more]]).
+
+This is my personal website; thanks for stopping by.

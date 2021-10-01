@@ -1,0 +1,7 @@
+This is the source code of my personal website, [[https://fritzgrabo.com][fritzgrabo.com]]; thanks for stopping by.
+
+All original text is available under a [[http://creativecommons.org/licenses/by-sa/4.0/][Creative Commons Attribution-ShareAlike 4.0 International License]].
+
+All the original code, as well as its inline documentation, is available under the terms of the [[https://www.gnu.org/licenses/gpl-3.0.html][GNU General Public License Version 3]] or any later version. This obviously doesn't apply to files in the ~/contrib~ folder.
+
+For any further questions, feel free to contact me.

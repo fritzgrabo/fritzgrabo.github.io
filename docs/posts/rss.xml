@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+     xmlns:georss="http://www.georss.org/georss"
+     xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+     xmlns:media="http://search.yahoo.com/mrss/"><channel>
+  <title>Fritz Grabo</title>
+  <atom:link href="https://fritzgrabo.com/posts/rss.xml" rel="self" type="application/rss+xml" />
+  <link>https://fritzgrabo.com/posts/</link>
+  <description><![CDATA[]]></description>
+  <language>en</language>
+  <pubDate>Thu, 14 Apr 2022 22:32:57 +0200</pubDate>
+  <lastBuildDate>Thu, 14 Apr 2022 22:32:57 +0200</lastBuildDate>
+  <generator>Emacs 29.0 Org-mode 9.5.2</generator>
+  <webMaster>hello@fritzgrabo.com (Fritz Grabo)</webMaster>
+  <image>
+    <url>/</url>
+    <title>Fritz Grabo</title>
+    <link>https://fritzgrabo.com/posts/</link>
+  </image>
+
+  <item>
+    <title>Introducing ~ob-dsq~</title>
+    <link>https://fritzgrabo.com/posts/introducing-ob-dsq/</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://fritzgrabo.com/posts/introducing-ob-dsq/</guid>
+    <pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate>
+
+    <description><![CDATA[]]></description>
+  </item>
+</channel>
+</rss>

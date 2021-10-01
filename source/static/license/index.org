@@ -1,0 +1,9 @@
+#+title: License
+
+This website, [[https://fritzgrabo.com][fritzgrabo.com]], is the work of Fritz Grabo.
+
+All original text is available under a [[http://creativecommons.org/licenses/by-sa/4.0/][Creative Commons Attribution-ShareAlike 4.0 International License]].
+
+All the original code, as well as its inline documentation, is available under the terms of the [[https://www.gnu.org/licenses/gpl-3.0.html][GNU General Public License Version 3]] or any later version.
+
+For any further questions, feel free to contact me.

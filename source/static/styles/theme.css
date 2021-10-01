@@ -1,0 +1,94 @@
+p {
+  line-height: 1.4;
+}
+
+pre.src {
+  border-radius: 3px;
+  border: 1px solid #CCCCCC;
+  line-height: 1.25;
+  margin: 1em 0 0 0;
+  overflow-y: scroll;
+  padding: .5em;
+}
+
+blockquote {
+  border-left: .5em solid #F0F0F0;
+  margin: 1em 0 0 0;
+  padding-left: .5em;
+}
+
+p.verse {
+  margin: 1em 0 0 0;
+  padding-left: 1em;
+}
+
+code {
+  background-color: #F0F0F0;
+  border-radius: 6px;
+  font-size: 90%;
+  padding: .2em .4em;
+}
+
+#preamble {
+}
+
+#postamble {
+  color: #CCCCCC;
+}
+
+#postamble p,
+#preamble p {
+  font-size: initial;
+  margin: initial;
+}
+
+#postamble a,
+#postamble a:visited {
+  color: #CCCCCC;
+}
+
+img {
+  max-width: 100%;
+}
+
+.figure {
+  margin-bottom: 2em;
+}
+
+.figure p {
+  width: 75%;
+  margin: 0 auto;
+}
+
+.figure p:first-child {
+  width: initial;
+}
+
+.figure .pull-up {
+  margin-bottom: -2em;
+}
+
+h1.title {
+  text-align: initial;
+}
+
+h1.title .subtitle {
+  font-size: initial;
+  font-weight: initial;
+}
+
+/* TODO: Really want to muck around w/ footnotes styling? */
+
+h2.footnotes {
+  font-size: initial;
+}
+
+.footdef > sup,
+.footdef div.footpara,
+.footdef p.footpara:first-child {
+  display: inline;
+}
+
+.footdef {
+  margin-bottom: 1em;
+}

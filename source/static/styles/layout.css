@@ -1,0 +1,11 @@
+body {
+  margin-bottom: 2em;
+}
+
+#preamble,
+#postamble,
+#content {
+  max-width: 40rem;
+  margin: auto;
+  padding: 0 1rem;
+}

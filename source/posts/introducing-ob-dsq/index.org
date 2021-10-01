@@ -1,0 +1,132 @@
+#+title: Introducing ~ob-dsq~
+#+date: [2022-04-10 Sun]
+
+#+html_head_extra: <meta name="twitter:card" content="summary">
+#+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
+#+html_head_extra: <meta name="twitter:title" content="Introducing ob-dsq">
+#+html_head_extra: <meta name="twitter:description" content="Babel functions for the `dsq` CLI tool by Multiprocess Labs.">
+#+html_head_extra: <meta name="og:title" content="Introducing ob-dsq">
+#+html_head_extra: <meta name="og:description" content="Babel functions for the `dsq` CLI tool by Multiprocess Labs.">
+
+* Problem Statement
+
+In my job, I'm part of a team that writes, and operates software.
+The operating part, more so than the writing one, involves working with sets of related data that exist in a variety of places and in a variety of formats:
+there are SQL databases, JSON files, CSV reports, the occasional spreadsheet, data fetched from online APIs, and many more.
+
+Sometimes, if the usefulness justifies the effort, I manually create a handful of tables in an [[https://sqlite.org][SQLite]] database, write a little code to extract data from various disparate sources into CSV files and then [[https://sqlite.org/cli.html#importing_files_as_csv_or_other_formats][import those files into the database]] so I can run SQL queries against them.
+
+As I research the data, I copy query results and my related notes into the [[https://orgmode.org][Org mode]] file I use to document my work.
+
+This gets the job done, but from a workflow perspective, (a) the manual setup of the database as well as (b) the back and forth between SQLite and Org mode are less than perfect.
+
+* Off to a great start with ~dsq~
+
+Some weeks ago, the [[https://console.dev][console.dev]] newsletter featured [[https://github.com/multiprocessio/dsq][~dsq~]] by [[https://multiprocess.io][Multiprocess Labs]]: a command line tool that allows for running SQL queries against multiple files of a growing number of supported types as database tables and for joining between them.
+
+Oh wow, how cool is that!
+
+#+begin_src shell
+$ cat scores.json
+[{"name":"Fritz", "score":12},
+{"name":"Elisabeth", "score":99},
+{"name":"Noah", "score":8},
+{"name":"Sarah", "score":5},
+{"name":"Rainer", "score":9}]
+
+$ dsq scores.json "SELECT name FROM {} WHERE score > 10"
+[{"name":"Fritz"},
+{"name":"Elisabeth"}]
+#+end_src
+
+I highly recommend checking out its introductory [[https://datastation.multiprocess.io/blog/2022-01-11-dsq.html][blog]] [[https://datastation.multiprocess.io/blog/2022-03-23-dsq-0.9.0.html][posts]] for an in-depth description of ~dsq~'s many features.
+
+So that takes care of half the problem, right?
+
+* But wait, there's more!
+
+Inspired by its usefulness and the ease of use, I wrote the [[https://github.com/fritzgrabo/ob-dsq][~ob-dsq~ Emacs package]] that integrates ~dsq~ with Org mode's [[https://orgmode.org/worg/org-contrib/babel/intro.html][Babel system]] for literate programming and reproducible research.
+
+~ob-dsq~ provides the expected wrapper around the ~dsq~ command line tool with the usual customization options around the presentation of the results, and, much more importantly, it allows for using Org references as data sources and in variable expansion.
+
+That's a mouthful, so here's a demonstration to illustrate:
+continuing the ~scores.json~ example from above, consider this regular Org table called "Flags".
+(Elisabeth's high score looks kind of suspicious, right?)
+
+#+begin_src org
+,#+name: Flags
+| name      | value |
+|-----------+-------|
+| Fritz     |       |
+| Elisabeth | t     |
+| Noah      |       |
+| Sarah     |       |
+| Rainer    |       |
+#+end_src
+
+Let's SQL JOIN this table with ~scores.json~ and query for the top three unflagged players, by score.
+
+#+begin_src org
+,#+name: Top-3-Players
+,#+begin_src dsq :input scores.json Flags
+SELECT scores.name, scores.score
+FROM {0} scores
+INNER JOIN {1} flags ON scores.name = flags.name
+WHERE flags.value != 't'
+ORDER BY scores.score DESC
+LIMIT 3
+,#+end_src
+
+,#+RESULTS: Top-3-Players
+| name   | score |
+|--------+-------|
+| Fritz  |    12 |
+| Rainer |     9 |
+| Noah   |     8 |
+#+end_src
+
+Note how both ~scores.json~ and the "Flags" table are listed as input arguments here without much fanfare: if ~ob-dsq~ detects an Org reference in its list of inputs, it silently exports that data to a temporary file and passes it to ~dsq~.
+
+Note also that "Flags" doesn't necessarily need to be an Org /table/.
+It could also be an Org example, an Org quote, a plain Org list, or, the most powerful option, an Org source block that evaluates to a list, tabular data, or anything else that ~dsq~ can handle.
+
+The possibilities are seemingly endless here: you could do a shell script to grab pod details off of your Kubernetes cluster with ~kubectl get pods -o json~, fetch data from an online API using the [[https://github.com/alf/ob-restclient.el][~ob-restclient~ package]], or use any one of the [[https://melpa.org/#/?q=ob-][dozens of available Org Babel integrations]].
+
+While we're at it, let's use Org source blocks to illustrate Org Babel's variable expansion feature, which ~ob-dsq~ supports:
+consider this Org source block called "Disqualified-Players" that dynamically generates a list of names.
+
+#+begin_src org
+,#+name: Disqualified-Players
+,#+begin_src elisp
+(list "Fritz" "Rainer")
+,#+end_src
+#+end_src
+
+Let's inject this list of names into the SQL query using variable expansion in order to filter out disqualified players.
+
+#+begin_src org
+,#+name: Winner
+,#+begin_src dsq :input scores.json Flags :var names=Disqualified-Players
+SELECT scores.name
+FROM {0} scores
+INNER JOIN {1} flags ON scores.name = flags.name
+WHERE flags.value != 't' AND scores.name NOT IN ($names)
+ORDER BY scores.score DESC
+LIMIT 1
+,#+end_src
+
+,#+RESULTS: Winner
+| name |
+|------|
+| Noah |
+#+end_src
+
+Neat; Congrats, Noah!
+
+* Closing thoughts
+
+This post gave a whirl-wind tour of ~ob-dsq~ -- if you're interested in trying it out yourself, check out the [[https://github.com/fritzgrabo/ob-dsq/tree/main/examples][examples in its repo]] for a more detailed list of features.
+
+Shoutout and much love to [[https://multiprocess.io][Multiprocess Labs]], the creators of ~dsq~ and its awesome sibling product, [[https://datastation.multiprocess.io][DataStation]].
+
+Finally, if you find any of this useful or have ideas on how to make it better, I'd love to [[https://www.reddit.com/r/emacs/comments/u1hf9d/ann_obdsqel_use_sql_to_join_and_query_json_csv/][hear from you]]. Thanks!

@@ -1,0 +1,3 @@
+#+title: Posts
+#+description: The personal website of Fritz Grabo
+#+attr_html: :class sitemap

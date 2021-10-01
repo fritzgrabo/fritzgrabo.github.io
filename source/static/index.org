@@ -1,0 +1,6 @@
+#+title: Fritz Grabo
+#+description: The personal website of Fritz Grabo
+
+I'm a self-employed senior software engineer currently living in Krems, Austria ([[./about/index.org][more]]).
+
+This is my personal website; thanks for stopping by.

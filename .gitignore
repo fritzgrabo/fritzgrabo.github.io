@@ -1,0 +1,12 @@
+source/posts/rss.org*
+source/posts/index.org
+source/static/styles/highlight.css
+source/static/scripts/highlight.min.js
+
+.packages
+.timestamps
+
+drafts
+
+.DS_Store
+TAGS

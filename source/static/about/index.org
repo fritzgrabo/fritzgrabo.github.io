@@ -1,0 +1,15 @@
+#+title: About
+#+description: About Fritz Grabo
+
+tbd
+
+Online Presences
+
+[[https://github.com/fritzgrabo][github/fritzgrabo]]@@html:<br>@@
+[[https://twitter.com/fritzgrabo][twitter/fritzgrabo]]
+
+Legal Notice
+
+Fritz Grabo@@html:<br>@@
+Schillerstraße 7, 3500 Krems an der Donau, Austria@@html:<br>@@
+VAT-ID: ATU-66179725

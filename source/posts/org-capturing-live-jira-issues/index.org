@@ -1,0 +1,237 @@
+#+title: Org-capturing live Jira Issues
+#+date: [2022-05-08 Sun]
+
+#+html_head_extra: <meta name="twitter:card" content="summary">
+#+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
+#+html_head_extra: <meta name="twitter:title" content="Org-capturing live Jira Issues">
+#+html_head_extra: <meta name="twitter:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
+#+html_head_extra: <meta name="og:title" content="Org-capturing live Jira Issues">
+#+html_head_extra: <meta name="og:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
+
+* Problem Statement
+
+In my job, we use Atlassian Jira to manage and track our work.
+The main thing I interact with in Jira are "issues" ("tickets" in other services):
+I have a handful or two in flight at any given time.
+When I work on issues, I take extensive notes on them in a single Org file that I maintain for my job.
+
+I create a new Org TODO heading for an issue, and continue to work with that heading frequently enough to justify investing time into automating the heck out of it.
+
+What I ended up with is a very lightweight integration of Org and Jira that helps with pulling an issue's metadata from Jira's API into an Org heading, and with keeping it current in there over time[fn:1].
+
+In this post, I describe that surprisingly simple integration in detail.
+My goal is to show how far one can go in Emacs with just a little customization effort, and to provide some useful insights in case you decide to experiment with any of this to streamline /your/ specific workflow, too.
+
+* Orientation
+
+- I start with a simple Org capture template that prompts for an issue key (aka "ticket number"), then stores that key in a new, otherwise empty TODO heading as a ~JiraIssueKey~ property, then immediately finishes the capture.
+
+
+- Org mode offers a hook for processing the captured heading before it finalizes the capture.
+  I add a function to that hook that pulls metadata for an issue key stored in the current heading from Jira's API, resets the heading's headline (its title) from it, and finally copies a bunch of the issue's details into the heading's properties.
+
+
+- Doing all the heavy lifting in a separate function has the advantage that I can run that function anytime, on any heading with a ~JiraIssueKey~ property.
+  I use that to update existing headings (individually or in bulk) whenever I need to.
+
+* Capturing
+
+If you've worked with [[https://orgmode.org/manual/Capture-templates.html][Org capture templates]] before, this one will read pretty straight forward.
+It binds the ~i~ key to a template that prompts for the Jira issue key, then adds a new TODO heading with that property to ~~/work.org~ under the top-level "Issues" heading.
+Note that I set the ~:immediate-finish~ flag, which means that capturing ends immediately after answering the prompt for the issue key.
+
+#+begin_src elisp
+(setq org-capture-templates
+      '(("i" "Jira Issue" entry
+         (file+headline "~/work.org" "Issues")
+         "* TODO %^{JiraIssueKey}p"
+         :jump-to-captured t
+         :immediate-finish t
+         :empty-lines-after 1)))
+#+end_src
+
+* Post-processing the captured heading
+
+In the code block below, I add a custom function ~fg/jira-update-heading~ to the hook I mentioned before.
+Org calls this function with point on the new TODO heading before it finalizes the capture.
+
+#+begin_src elisp
+(defun fg/jira-update-heading ()
+  "Update heading for Jira Issue at point."
+  (interactive)
+  (when-let* ((pt (point))
+              (issue-key (and (org-at-heading-p)
+                              (org-entry-get pt "JIRAISSUEKEY"))))
+    ;; TODO: Pull issue metadata, update headline and properties
+    ))
+
+(add-hook 'org-capture-before-finalize-hook #'fg/jira-update-heading)
+#+end_src
+
+Note that I declare this function as "interactive":
+that way, I can manually invoke it as a command to pull the latest issue metadata for the heading at point whenever I need to.
+
+Note also that Org runs the above hook for /every/ capture, not just the "Jira Issue" one.
+The ~fg/jira-update-heading~ function accounts for this by silently ending early in case point is not on an Org heading with a ~JiraIssueKey~ property.
+
+* Pulling issue metadata
+
+I use nyyManni's straightforward, dependable [[https://github.com/nyyManni/jiralib2][jiralib2]] package which provides "Jira REST API bindings to Emacs Lisp".
+The package covers many parts of Jira's API actually, so you could use it to grab an issue's comments, update the issue, etc., too.
+For my usecase, I'm only interested in fetching an issue's metadata ([[https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issues/#api-rest-api-2-issue-issueidorkey-get][API docs]]).
+
+Setting up ~jiralib2~ is simple.
+There are variables for the Jira host's URL, your username, and auth settings.
+I decide to use the "token authentication" method and create an API token in my Jira Account's settings[fn:2].
+
+With the exception of the API token (which I keep in a secure location), I set everything up using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Variables.html#File-Variables][local variables]] in the Org file to allow for varying settings in distinct Org files.
+I add this to the end of ~~/work.org~[fn:3]:
+
+#+begin_src org
+# Local Variables:
+# jiralib2-auth: token
+# jiralib2-url: "https://example.atlassian.net"
+# jiralib2-user-login-name: "fgrabo@example.com"
+# End:
+#+end_src
+
+To test connectivity, I add this Org source block to pull an issue from Jira:
+
+#+begin_src org
+,#+begin_src elisp
+(jiralib2-get-issue "PRJ-1234")
+,#+end_src
+#+end_src
+
+Evaluating the block yields a data structure of nested [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html][association lists]]:
+
+#+begin_src elisp
+((key . "PRJ-1234")
+ (fields
+  (assignee
+   (emailAddress . "fgrabo@example.com")
+   (displayName . "Fritz Grabo"))
+  (summary . "Fix typo in product logo")
+  (description . "Actually, MegaCorp is spelled with a capital C")
+  ;; Many, many more fields and details
+  ))
+#+end_src
+
+The [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html#index-let_002dalist][Emacs ~let-alist~ macro]] provides an elegant way to dig up values from arbitrary paths in nested association lists.
+Here's a quick example:
+
+#+begin_src elisp
+(let-alist (jiralib2-get-issue "PRJ-1234") .fields.assignee.displayName)
+;; => Fritz Grabo
+#+end_src
+
+* Updating headline and properties
+
+With all the above out of the way, the complete ~fg/jira-update-heading~ function should be straight-forward to read:
+
+#+begin_src elisp
+(defun fg/jira-update-heading ()
+  "Update heading for Jira Issue at point."
+  (interactive)
+  (when-let* ((pt (point))
+              (issue-key (and (org-at-heading-p)
+                              (org-entry-get pt "JIRAISSUEKEY"))))
+    (let-alist (jiralib2-get-issue issue-key)
+      ;; Update headline
+      (let ((headline (format "%s %s" .key .fields.summary)))
+        (message "Updating %s" headline)
+        (org-edit-headline headline))
+      ;; Update properties
+      (cl-loop
+       for (property value)
+       on (list
+           "JiraAssignee" .fields.assignee.displayName
+           "JiraCreated" .fields.created
+           "JiraIssueKey" .key
+           "JiraIssueType" .fields.issuetype.name
+           "JiraPriority" .fields.priority.name
+           "JiraProjectKey" .fields.project.key
+           "JiraReporter" .fields.reporter.displayName
+           "JiraStatus" .fields.status.name
+           "JiraSummary" .fields.summary)
+       by #'cddr
+       do (org-entry-put pt property value)))))
+#+end_src
+
+Here's what the result of using the capture template for ~PRJ-1234~ looks like in the live Org file:
+
+#+begin_src org
+,* Issues
+,** TODO PRJ-1234 Fix typo in product logo
+   :PROPERTIES:
+   :JiraIssueKey: PRJ-1234
+   :JiraAssignee: Fritz Grabo
+   :JiraCreated: 2022-05-08T10:49:56.963-0400
+   :JiraIssueType: Task
+   :JiraPriority: Blocker
+   :JiraProjectKey: PRJ
+   :JiraReporter: Elisabeth K.
+   :JiraStatus: Ready
+   :JiraSummary: Fix typo in product logo
+   :END:
+#+end_src
+
+* Bulk-updating Jira issues in an Org file
+
+The last piece of the puzzle is a command to update /all/ headings with a ~JiraIssueKey~ property in a buffer.
+Fortunately, alphapapa's remarkably useful [[https://github.com/alphapapa/org-ql][org-ql]] package makes it dead easy to select all such headings and to run an arbitrary action on them:
+
+#+begin_src elisp
+(defvar fg/jira-heading-ql-query
+  '(and (property "JiraIssueKey") (not (tags "ARCHIVE")))
+  "Org-ql query to find headings for Jira issues.")
+
+(defun fg/jira-update-headings ()
+  "Update all headings for Jira issues in the current buffer."
+  (interactive)
+  (org-ql-select
+    (current-buffer)
+    fg/jira-heading-ql-query
+    :action #'fg/jira-update-heading)
+  (message "Done."))
+#+end_src
+
+Note that I filter out archived headings in the query.
+That's because I keep archived issues under an "Archived Issues" heading in the same file, and I don't bother updating them once they're archived.
+Note also that I pull the org-ql query out into a variable so I can override it using file-local variables if need be.
+
+If you're so inclined, you could wire this function up to run on a timer, or when the file is modified.
+Myself, I invoke the command manually whenever I want updated details.
+
+To make this a little easier, I place an [[https://orgmode.org/manual/External-Links.html][external Org link]] to ~elisp:fg/jira-update-headings~ at the top of the file that runs the command when I click (or otherwise open) it.
+
+* Taking this further
+
+With such easy means to add Jira issue details into an Org file, it's hard not to be tempted to /do something/ with all that data.
+
+Ideas include:
+
+- Defer the heading's TODO status from the issue's status[fn:4].
+- Fetch all the issues of the current sprint using ~jiralib2-jql-search~, use a [[https://orgmode.org/manual/Capturing-column-view.html#index-BEGIN-columnview][capturing column-view]] to render a quick dashboard.
+- Fetch like above, but use [[https://github.com/alphapapa/org-ql][org-ql]], [[https://github.com/fritzgrabo/ob-dsq][ob-dsq]] and [[https://github.com/fritzgrabo/ob-dsq/tree/main/examples#dynamically-generated-tabular-data][SQL queries to create reports]] like "story points left in sprint per assignee", etc. from Org heading properties.
+- Use minad's wonderful [[https://github.com/minad/tempel][tempel]] package to expand the mention of an issue key into its <key and title>.
+
+* Closing thoughts
+
+I am stunned to see how little code it takes to achive such a drastic impact on my daily work.
+"Such are the powers of the extensible, customizable text editor", I guess, and the possibilities that come with it.
+
+I'm grateful to the authors and maintainers of Org mode, jiralib2 and org-ql, because really, I am just adding trivial glue code here to integrate packages that are showcases of good craftsmanship and that are built with extensibility in mind.
+
+Finally, if you find any of this useful or have ideas on how to make it better, I'd love to [[https://www.reddit.com/r/emacs/comments/ulaswe/blog_post_orgcapturing_live_jira_issues/][hear from you]]. Thanks!
+
+[fn:1] If you're looking for a more apt integration with Jira, do check out the popular [[https://github.com/nyyManni/ejira][Ejira]] and [[https://github.com/ahungry/org-jira][org-jira]] packages, both of which come with an impressive list of features.
+
+[fn:2] Go to https://id.atlassian.com, Account Settings, Security, Create and manage API tokens, Create API token.
+
+[fn:3] If you follow along, note that you'll need to kill the buffer and revisit the file to apply these variables.
+
+[fn:4] For example, I could set the heading's todo status to DONE when the issue's status moves to "In Production".
+In my workflow, though, I noticed that there's enough exceptions to the rule that automating this doesn't work for me.
+For instance, I often mark a heading DONE as soon as its issue goes to the release queue, but before it's "In Production".
+At the same time, I sometimes want to keep the heading in PROGRESS even after its issue moved to "In Production" because I want to verify an assumption after deploying to production before I close it out.

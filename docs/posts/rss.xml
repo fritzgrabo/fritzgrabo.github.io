@@ -14,9 +14,9 @@
   <link>https://fritzgrabo.com/posts/</link>
   <description><![CDATA[]]></description>
   <language>en</language>
-  <pubDate>Thu, 14 Apr 2022 22:32:57 +0200</pubDate>
-  <lastBuildDate>Thu, 14 Apr 2022 22:32:57 +0200</lastBuildDate>
-  <generator>Emacs 29.0 Org-mode 9.5.2</generator>
+  <pubDate>Sun, 08 May 2022 22:40:21 +0200</pubDate>
+  <lastBuildDate>Sun, 08 May 2022 22:40:21 +0200</lastBuildDate>
+  <generator>Emacs 29.0 Org-mode 9.5.3</generator>
   <webMaster>hello@fritzgrabo.com (Fritz Grabo)</webMaster>
   <image>
     <url>/</url>
@@ -24,6 +24,15 @@
     <link>https://fritzgrabo.com/posts/</link>
   </image>
 
+  <item>
+    <title>Org-capturing live Jira Issues</title>
+    <link>https://fritzgrabo.com/posts/org-capturing-live-jira-issues/</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://fritzgrabo.com/posts/org-capturing-live-jira-issues/</guid>
+    <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
+
+    <description><![CDATA[]]></description>
+  </item>
   <item>
     <title>Introducing ~ob-dsq~</title>
     <link>https://fritzgrabo.com/posts/introducing-ob-dsq/</link>

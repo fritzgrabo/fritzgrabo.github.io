@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Org-capturing live Jira Issues</title>
+<meta name="author" content="Fritz Grabo" />
+<meta name="generator" content="Org Mode" />
+<!-- Stylesheets -->
+<link rel="stylesheet" href="/styles/main.css" />
+<!-- Scripts -->
+<script src="/scripts/main.js"></script>
+<!-- Icons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@fritzgrabo">
+<meta name="twitter:title" content="Org-capturing live Jira Issues">
+<meta name="twitter:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
+<meta name="og:title" content="Org-capturing live Jira Issues">
+<meta name="og:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
+</head>
+<body>
+<div id="preamble" class="status">
+<p>
+  <a href="/">Fritz Grabo</a> /
+  <a href="/posts/">Posts</a>
+  <a href="/posts/rss.xml">(RSS)</a> /
+  <a href="/about/">About</a>
+</p>
+</div>
+<div id="content" class="content">
+<h1 class="title">Org-capturing live Jira Issues
+<br />
+<span class="subtitle">Published 2022-05-08</span>
+</h1>
+<section id="outline-container-problem-statement" class="outline-2">
+<h2 id="problem-statement">Problem Statement</h2>
+<div class="outline-text-2" id="text-problem-statement">
+<p>
+In my job, we use Atlassian Jira to manage and track our work.
+The main thing I interact with in Jira are "issues" ("tickets" in other services):
+I have a handful or two in flight at any given time.
+When I work on issues, I take extensive notes on them in a single Org file that I maintain for my job.
+</p>
+
+<p>
+I create a new Org TODO heading for an issue, and continue to work with that heading frequently enough to justify investing time into automating the heck out of it.
+</p>
+
+<p>
+What I ended up with is a very lightweight integration of Org and Jira that helps with pulling an issue's metadata from Jira's API into an Org heading, and with keeping it current in there over time<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>.
+</p>
+
+<p>
+In this post, I describe that surprisingly simple integration in detail.
+My goal is to show how far one can go in Emacs with just a little customization effort, and to provide some useful insights in case you decide to experiment with any of this to streamline <i>your</i> specific workflow, too.
+</p>
+</div>
+</section>
+<section id="outline-container-orientation" class="outline-2">
+<h2 id="orientation">Orientation</h2>
+<div class="outline-text-2" id="text-orientation">
+<ul class="org-ul">
+<li>I start with a simple Org capture template that prompts for an issue key (aka "ticket number"), then stores that key in a new, otherwise empty TODO heading as a <code>JiraIssueKey</code> property, then immediately finishes the capture.</li>
+</ul>
+
+
+<ul class="org-ul">
+<li>Org mode offers a hook for processing the captured heading before it finalizes the capture.
+I add a function to that hook that pulls metadata for an issue key stored in the current heading from Jira's API, resets the heading's headline (its title) from it, and finally copies a bunch of the issue's details into the heading's properties.</li>
+</ul>
+
+
+<ul class="org-ul">
+<li>Doing all the heavy lifting in a separate function has the advantage that I can run that function anytime, on any heading with a <code>JiraIssueKey</code> property.
+I use that to update existing headings (individually or in bulk) whenever I need to.</li>
+</ul>
+</div>
+</section>
+<section id="outline-container-capturing" class="outline-2">
+<h2 id="capturing">Capturing</h2>
+<div class="outline-text-2" id="text-capturing">
+<p>
+If you've worked with <a href="https://orgmode.org/manual/Capture-templates.html">Org capture templates</a> before, this one will read pretty straight forward.
+It binds the <code>i</code> key to a template that prompts for the Jira issue key, then adds a new TODO heading with that property to <code>~/work.org</code> under the top-level "Issues" heading.
+Note that I set the <code>:immediate-finish</code> flag, which means that capturing ends immediately after answering the prompt for the issue key.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #800080;">setq</span> org-capture-templates
+      '((<span style="color: #8b2252;">"i"</span> <span style="color: #8b2252;">"Jira Issue"</span> entry
+         (file+headline <span style="color: #8b2252;">"~/work.org"</span> <span style="color: #8b2252;">"Issues"</span>)
+         <span style="color: #8b2252;">"* TODO %^{JiraIssueKey}p"</span>
+         <span style="color: #483d8b;">:jump-to-captured</span> t
+         <span style="color: #483d8b;">:immediate-finish</span> t
+         <span style="color: #483d8b;">:empty-lines-after</span> 1)))
+</pre>
+</div>
+</div>
+</section>
+<section id="outline-container-post-processing-the-captured-heading" class="outline-2">
+<h2 id="post-processing-the-captured-heading">Post-processing the captured heading</h2>
+<div class="outline-text-2" id="text-post-processing-the-captured-heading">
+<p>
+In the code block below, I add a custom function <code>fg/jira-update-heading</code> to the hook I mentioned before.
+Org calls this function with point on the new TODO heading before it finalizes the capture.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #800080;">defun</span> <span style="color: #0000ff;">fg/jira-update-heading</span> ()
+  <span style="color: #8b2252;">"Update heading for Jira Issue at point."</span>
+  (<span style="color: #800080;">interactive</span>)
+  (<span style="color: #800080;">when-let*</span> ((pt (point))
+              (issue-key (<span style="color: #800080;">and</span> (org-at-heading-p)
+                              (org-entry-get pt <span style="color: #8b2252;">"JIRAISSUEKEY"</span>))))
+    <span style="color: #b22222;">;; </span><span style="color: #b22222;">TODO: Pull issue metadata, update headline and properties
+</span>    ))
+
+(add-hook 'org-capture-before-finalize-hook #'fg/jira-update-heading)
+</pre>
+</div>
+
+<p>
+Note that I declare this function as "interactive":
+that way, I can manually invoke it as a command to pull the latest issue metadata for the heading at point whenever I need to.
+</p>
+
+<p>
+Note also that Org runs the above hook for <i>every</i> capture, not just the "Jira Issue" one.
+The <code>fg/jira-update-heading</code> function accounts for this by silently ending early in case point is not on an Org heading with a <code>JiraIssueKey</code> property.
+</p>
+</div>
+</section>
+<section id="outline-container-pulling-issue-metadata" class="outline-2">
+<h2 id="pulling-issue-metadata">Pulling issue metadata</h2>
+<div class="outline-text-2" id="text-pulling-issue-metadata">
+<p>
+I use nyyManni's straightforward, dependable <a href="https://github.com/nyyManni/jiralib2">jiralib2</a> package which provides "Jira REST API bindings to Emacs Lisp".
+The package covers many parts of Jira's API actually, so you could use it to grab an issue's comments, update the issue, etc., too.
+For my usecase, I'm only interested in fetching an issue's metadata (<a href="https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issues/#api-rest-api-2-issue-issueidorkey-get">API docs</a>).
+</p>
+
+<p>
+Setting up <code>jiralib2</code> is simple.
+There are variables for the Jira host's URL, your username, and auth settings.
+I decide to use the "token authentication" method and create an API token in my Jira Account's settings<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>.
+</p>
+
+<p>
+With the exception of the API token (which I keep in a secure location), I set everything up using <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Variables.html#File-Variables">local variables</a> in the Org file to allow for varying settings in distinct Org files.
+I add this to the end of <code>~/work.org</code><sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #b22222;"># Local Variables&#58;</span>
+<span style="color: #b22222;"># jiralib2-auth: token</span>
+<span style="color: #b22222;"># jiralib2-url: "<a href="https://example.atlassian.net">https://example.atlassian.net</a>"</span>
+<span style="color: #b22222;"># jiralib2-user-login-name: "fgrabo@example.com"</span>
+<span style="color: #b22222;"># End:</span>
+</pre>
+</div>
+
+<p>
+To test connectivity, I add this Org source block to pull an issue from Jira:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #b22222;">#+begin_src elisp
+</span>(jiralib2-get-issue <span style="color: #8b2252;">"PRJ-1234"</span>)
+<span style="color: #b22222;">#+end_src</span>
+</pre>
+</div>
+
+<p>
+Evaluating the block yields a data structure of nested <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html">association lists</a>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">((key . <span style="color: #8b2252;">"PRJ-1234"</span>)
+ (fields
+  (assignee
+   (emailAddress . <span style="color: #8b2252;">"fgrabo@example.com"</span>)
+   (displayName . <span style="color: #8b2252;">"Fritz Grabo"</span>))
+  (summary . <span style="color: #8b2252;">"Fix typo in product logo"</span>)
+  (description . <span style="color: #8b2252;">"Actually, MegaCorp is spelled with a capital C"</span>)
+  <span style="color: #b22222;">;; </span><span style="color: #b22222;">Many, many more fields and details
+</span>  ))
+</pre>
+</div>
+
+<p>
+The <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html#index-let_002dalist">Emacs <code>let-alist</code> macro</a> provides an elegant way to dig up values from arbitrary paths in nested association lists.
+Here's a quick example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #800080;">let-alist</span> (jiralib2-get-issue <span style="color: #8b2252;">"PRJ-1234"</span>) .fields.assignee.displayName)
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">=&gt; Fritz Grabo</span>
+</pre>
+</div>
+</div>
+</section>
+<section id="outline-container-updating-headline-and-properties" class="outline-2">
+<h2 id="updating-headline-and-properties">Updating headline and properties</h2>
+<div class="outline-text-2" id="text-updating-headline-and-properties">
+<p>
+With all the above out of the way, the complete <code>fg/jira-update-heading</code> function should be straight-forward to read:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #800080;">defun</span> <span style="color: #0000ff;">fg/jira-update-heading</span> ()
+  <span style="color: #8b2252;">"Update heading for Jira Issue at point."</span>
+  (<span style="color: #800080;">interactive</span>)
+  (<span style="color: #800080;">when-let*</span> ((pt (point))
+              (issue-key (<span style="color: #800080;">and</span> (org-at-heading-p)
+                              (org-entry-get pt <span style="color: #8b2252;">"JIRAISSUEKEY"</span>))))
+    (<span style="color: #800080;">let-alist</span> (jiralib2-get-issue issue-key)
+      <span style="color: #b22222;">;; </span><span style="color: #b22222;">Update headline
+</span>      (<span style="color: #800080;">let</span> ((headline (format <span style="color: #8b2252;">"%s %s"</span> .key .fields.summary)))
+        (message <span style="color: #8b2252;">"Updating %s"</span> headline)
+        (org-edit-headline headline))
+      <span style="color: #b22222;">;; </span><span style="color: #b22222;">Update properties
+</span>      (<span style="color: #800080;">cl-loop</span>
+       for (property value)
+       on (list
+           <span style="color: #8b2252;">"JiraAssignee"</span> .fields.assignee.displayName
+           <span style="color: #8b2252;">"JiraCreated"</span> .fields.created
+           <span style="color: #8b2252;">"JiraIssueKey"</span> .key
+           <span style="color: #8b2252;">"JiraIssueType"</span> .fields.issuetype.name
+           <span style="color: #8b2252;">"JiraPriority"</span> .fields.priority.name
+           <span style="color: #8b2252;">"JiraProjectKey"</span> .fields.project.key
+           <span style="color: #8b2252;">"JiraReporter"</span> .fields.reporter.displayName
+           <span style="color: #8b2252;">"JiraStatus"</span> .fields.status.name
+           <span style="color: #8b2252;">"JiraSummary"</span> .fields.summary)
+       by #'cddr
+       do (org-entry-put pt property value)))))
+</pre>
+</div>
+
+<p>
+Here's what the result of using the capture template for <code>PRJ-1234</code> looks like in the live Org file:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #0000ff; font-weight: bold;">* Issues</span>
+<span style="color: #a0522d; font-weight: bold;">** </span><span style="color: #e00033; font-weight: bold;">TODO</span><span style="color: #a0522d; font-weight: bold;"> PRJ-1234 Fix typo in product logo</span>
+   <span style="color: #0000ff;">:PROPERTIES:</span>
+   <span style="color: #800080;">:JiraIssueKey:</span> <span style="color: #193f8f;">PRJ-1234</span>
+   <span style="color: #800080;">:JiraAssignee:</span> <span style="color: #193f8f;">Fritz Grabo</span>
+   <span style="color: #800080;">:JiraCreated:</span> <span style="color: #193f8f;">2022-05-08T10:49:56.963-0400</span>
+   <span style="color: #800080;">:JiraIssueType:</span> <span style="color: #193f8f;">Task</span>
+   <span style="color: #800080;">:JiraPriority:</span> <span style="color: #193f8f;">Blocker</span>
+   <span style="color: #800080;">:JiraProjectKey:</span> <span style="color: #193f8f;">PRJ</span>
+   <span style="color: #800080;">:JiraReporter:</span> <span style="color: #193f8f;">Elisabeth K.</span>
+   <span style="color: #800080;">:JiraStatus:</span> <span style="color: #193f8f;">Ready</span>
+   <span style="color: #800080;">:JiraSummary:</span> <span style="color: #193f8f;">Fix typo in product logo</span>
+   <span style="color: #0000ff;">:END:</span>
+</pre>
+</div>
+</div>
+</section>
+<section id="outline-container-bulk-updating-jira-issues-in-an-org-file" class="outline-2">
+<h2 id="bulk-updating-jira-issues-in-an-org-file">Bulk-updating Jira issues in an Org file</h2>
+<div class="outline-text-2" id="text-bulk-updating-jira-issues-in-an-org-file">
+<p>
+The last piece of the puzzle is a command to update <i>all</i> headings with a <code>JiraIssueKey</code> property in a buffer.
+Fortunately, alphapapa's remarkably useful <a href="https://github.com/alphapapa/org-ql">org-ql</a> package makes it dead easy to select all such headings and to run an arbitrary action on them:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(<span style="color: #800080;">defvar</span> <span style="color: #a0522d;">fg/jira-heading-ql-query</span>
+  '(and (property <span style="color: #8b2252;">"JiraIssueKey"</span>) (not (tags <span style="color: #8b2252;">"ARCHIVE"</span>)))
+  <span style="color: #8b2252;">"Org-ql query to find headings for Jira issues."</span>)
+
+(<span style="color: #800080;">defun</span> <span style="color: #0000ff;">fg/jira-update-headings</span> ()
+  <span style="color: #8b2252;">"Update all headings for Jira issues in the current buffer."</span>
+  (<span style="color: #800080;">interactive</span>)
+  (org-ql-select
+    (current-buffer)
+    fg/jira-heading-ql-query
+    <span style="color: #483d8b;">:action</span> #'fg/jira-update-heading)
+  (message <span style="color: #8b2252;">"Done."</span>))
+</pre>
+</div>
+
+<p>
+Note that I filter out archived headings in the query.
+That's because I keep archived issues under an "Archived Issues" heading in the same file, and I don't bother updating them once they're archived.
+Note also that I pull the org-ql query out into a variable so I can override it using file-local variables if need be.
+</p>
+
+<p>
+If you're so inclined, you could wire this function up to run on a timer, or when the file is modified.
+Myself, I invoke the command manually whenever I want updated details.
+</p>
+
+<p>
+To make this a little easier, I place an <a href="https://orgmode.org/manual/External-Links.html">external Org link</a> to <code>elisp:fg/jira-update-headings</code> at the top of the file that runs the command when I click (or otherwise open) it.
+</p>
+</div>
+</section>
+<section id="outline-container-taking-this-further" class="outline-2">
+<h2 id="taking-this-further">Taking this further</h2>
+<div class="outline-text-2" id="text-taking-this-further">
+<p>
+With such easy means to add Jira issue details into an Org file, it's hard not to be tempted to <i>do something</i> with all that data.
+</p>
+
+<p>
+Ideas include:
+</p>
+
+<ul class="org-ul">
+<li>Defer the heading's TODO status from the issue's status<sup><a id="fnr.4" class="footref" href="#fn.4" role="doc-backlink">4</a></sup>.</li>
+<li>Fetch all the issues of the current sprint using <code>jiralib2-jql-search</code>, use a <a href="https://orgmode.org/manual/Capturing-column-view.html#index-BEGIN-columnview">capturing column-view</a> to render a quick dashboard.</li>
+<li>Fetch like above, but use <a href="https://github.com/alphapapa/org-ql">org-ql</a>, <a href="https://github.com/fritzgrabo/ob-dsq">ob-dsq</a> and <a href="https://github.com/fritzgrabo/ob-dsq/tree/main/examples#dynamically-generated-tabular-data">SQL queries to create reports</a> like "story points left in sprint per assignee", etc. from Org heading properties.</li>
+<li>Use minad's wonderful <a href="https://github.com/minad/tempel">tempel</a> package to expand the mention of an issue key into its &lt;key and title&gt;.</li>
+</ul>
+</div>
+</section>
+<section id="outline-container-closing-thoughts" class="outline-2">
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<div class="outline-text-2" id="text-closing-thoughts">
+<p>
+I am stunned to see how little code it takes to achive such a drastic impact on my daily work.
+"Such are the powers of the extensible, customizable text editor", I guess, and the possibilities that come with it.
+</p>
+
+<p>
+I'm grateful to the authors and maintainers of Org mode, jiralib2 and org-ql, because really, I am just adding trivial glue code here to integrate packages that are showcases of good craftsmanship and that are built with extensibility in mind.
+</p>
+
+<p>
+Finally, if you find any of this useful or have ideas on how to make it better, I'd love to <a href="https://www.reddit.com/r/emacs/comments/ulaswe/blog_post_orgcapturing_live_jira_issues/">hear from you</a>. Thanks!
+</p>
+</div>
+</section>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+If you're looking for a more apt integration with Jira, do check out the popular <a href="https://github.com/nyyManni/ejira">Ejira</a> and <a href="https://github.com/ahungry/org-jira">org-jira</a> packages, both of which come with an impressive list of features.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+Go to <a href="https://id.atlassian.com">https://id.atlassian.com</a>, Account Settings, Security, Create and manage API tokens, Create API token.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+If you follow along, note that you'll need to kill the buffer and revisit the file to apply these variables.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4" role="doc-backlink">4</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+For example, I could set the heading's todo status to DONE when the issue's status moves to "In Production".
+In my workflow, though, I noticed that there's enough exceptions to the rule that automating this doesn't work for me.
+For instance, I often mark a heading DONE as soon as its issue goes to the release queue, but before it's "In Production".
+At the same time, I sometimes want to keep the heading in PROGRESS even after its issue moved to "In Production" because I want to verify an assumption after deploying to production before I close it out.
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p>Published 2022-05-08, last modified 2022-05-08.</p>
+<p>
+  All original content is licensed under a custom <a href="/license/">license</a>.
+</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Introducing ~elfeed-webkit~</title>
+<meta name="author" content="Fritz Grabo" />
+<meta name="generator" content="Org Mode" />
+<!-- Stylesheets -->
+<link rel="stylesheet" href="/styles/main.css" />
+<!-- Scripts -->
+<script src="/scripts/main.js"></script>
+<!-- Icons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@fritzgrabo">
+<meta name="twitter:title" content="Introducing elfeed-webkit">
+<meta name="twitter:description" content="Render elfeed entries in embedded webkit widgets.">
+<meta name="og:title" content="Introducing elfeed-webkit">
+<meta name="og:description" content="Render elfeed entries in embedded webkit widgets.">
+</head>
+<body>
+<div id="preamble" class="status">
+<p>
+  <a href="/">Fritz Grabo</a> /
+  <a href="/posts/">Posts</a>
+  <a href="/posts/rss.xml">(RSS)</a> /
+  <a href="/about/">About</a>
+</p>
+</div>
+<div id="content" class="content">
+<h1 class="title">Introducing <code>elfeed-webkit</code>
+<br />
+<span class="subtitle">Published 2023-05-22</span>
+</h1>
+<section id="outline-container-elfeed-is-great-but" class="outline-2">
+<h2 id="elfeed-is-great-but">Elfeed is great, but &#x2026;</h2>
+<div class="outline-text-2" id="text-elfeed-is-great-but">
+<p>
+Elfeed is an extensible web feed reader for Emacs, and it's great.
+I'm subscribed to a couple dozen feeds, and I use elfeed almost every day to check for news.
+</p>
+
+<p>
+But &#x2026;
+</p>
+
+<ul class="org-ul">
+<li>most of the feeds I'm subscribed to are for text-heavy blogs, <i>but not all of them are</i>.</li>
+<li>most of the blogs include the post contents in the feed's entry, <i>but not all of them do</i>.</li>
+<li>most of the entries render well as text via Emacs' <code>shr</code><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup> library, <i>but not all of them do</i>.</li>
+<li>some of the blogs have dynamic content (think comments) that's not included in the feed.</li>
+</ul>
+
+<p>
+For entries that don't work well in a text-based feed reader, elfeed provides a way to open their source link in a web browser via <code>elfeed-search-browse-url</code> (conveniently bound to <code>b</code>).
+</p>
+
+<p>
+While that works, it means leaving Emacs, and more importantly, leaving the context of elfeed.
+In order to move to the next entry, or to tag or bookmark the entry, you'd have to switch back to Emacs first.
+</p>
+</div>
+</section>
+<section id="outline-container-xwidgets-to-the-rescue" class="outline-2">
+<h2 id="xwidgets-to-the-rescue">Xwidgets to the rescue</h2>
+<div class="outline-text-2" id="text-xwidgets-to-the-rescue">
+<p>
+As usual, Emacs has us covered: when compiled with xwidget support, it knows how to <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Embedded-WebKit-Widgets.html">embed a webkit widget into a buffer</a>, and browse arbitrary URLs in it.
+</p>
+
+<p>
+Wouldn't it be great if &#x2026;
+</p>
+</div>
+</section>
+<section id="outline-container-enter-elfeed-webkit" class="outline-2">
+<h2 id="enter-elfeed-webkit">Enter <code>elfeed-webkit</code></h2>
+<div class="outline-text-2" id="text-enter-elfeed-webkit">
+<p>
+Inspired by the possibilities (and surprised that no such package exists yet<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>), I wrote <a href="https://github.com/fritzgrabo/elfeed-webkit"><code>elfeed-webkit</code></a> to integrate elfeed with Emacs' webkit widgets support.
+</p>
+
+<p>
+Fortunately, elfeed delivers on its promise to be an "extensible web feed reader": the way feed entries are rendered is entirely pluggable via its <code>elfeed-show-refresh-function</code> variable.
+</p>
+
+<p>
+Let's compare our options.
+</p>
+
+<p>
+(a) Elfeed's familiar default shows mail-style headers for the entry's title, author, etc., a list of <a href="https://en.wikipedia.org/wiki/RSS_enclosure">enclosures</a> (if any), and an <code>shr</code>-based rendering of its content.
+Note that there's no network activity required at this point: elfeed merely displays the contents of the previously downloaded feed entry.
+As a result, displaying and entry feels instantaneous.
+</p>
+
+
+<div class="figure">
+<p><img src="render-shr.jpeg" alt="A blog post rendered with elfeed's default" />
+</p>
+<p><span class="figure-number">Figure 1: </span>A blog post rendered with elfeed's default.</p>
+</div>
+
+<p>
+(b) <code>Elfeed-webkit</code>'s alternative puts a webkit widget into the buffer and opens the entry's source link in it.
+It enables a webkit-related toolbar and keybindings to allow for a convenient browsing experience, and it keeps most of the elfeed-related keybindings around as well.
+Because the link is visited online and in a full-blown webkit widget, it is definitely slower and more resource-hungry than elfeed's offline text variant.
+</p>
+
+
+<div class="figure">
+<p><img src="render-webkit.jpeg" alt="A blog post rendered with elfeed-webkit" />
+</p>
+<p><span class="figure-number">Figure 2: </span>A blog post rendered with <code>elfeed-webkit</code>.</p>
+</div>
+
+<p>
+Both options have their uses, so <code>elfeed-webkit</code> provides an easy way to toggle between these alternatives in an entry's buffer via <code>elfeed-webkit-toggle</code>.
+</p>
+
+<p>
+And, likely more useful, it supports automatic enabling of webkit based on a feed entry's tags: if you know that a certain feed <i>never</i> renders well as text, just add the <code>webkit</code> tag to it and all its new entries are going to be displayed with webkit automatically.
+</p>
+</div>
+</section>
+<section id="outline-container-taking-this-further" class="outline-2">
+<h2 id="taking-this-further">Taking this further</h2>
+<div class="outline-text-2" id="text-taking-this-further">
+<p>
+I've been using <code>elfeed-webkit</code> for a while now, and it's been working well for me.
+The one thing I feel could be better is its performance: starting up a new xwidget session for each and every feed entry is not exactly a lightweight operation, and its noticeable when jumping from one entry to the next.
+</p>
+
+<p>
+I'll want to follow the lead of Boris Glavic's <a href="https://github.com/lordpretzel/xwidgets-reuse">xwidgets-reuse</a> package and see if I can reuse an existing webkit widget without breaking elfeed's concept of rendering feed entries in a dedicated buffer/dedicated buffers.
+</p>
+</div>
+</section>
+<section id="outline-container-closing-thoughts" class="outline-2">
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<div class="outline-text-2" id="text-closing-thoughts">
+<p>
+This post provided a brief introduction to the <code>elfeed-webkit</code> package &#x2013; if you're interested in trying it out yourself, <a href="https://github.com/fritzgrabo/elfeed-webkit">check out its repo</a> for installation instructions and more details regarding its usage and customization options.
+</p>
+
+<p>
+Finally, if you find any of this useful or have ideas on how to make it better, I'd love to <a href="https://www.reddit.com/r/emacs/comments/13oj6tz/blog_post_introducing_elfeedwebkit/">hear from you</a>. Thanks!
+</p>
+</div>
+</section>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+<code>shr</code> stands for "Simple HTML Renderer", an Emacs built-in package that "does not do CSS, JavaScript or anything advanced: It's geared
+towards rendering typical short snippets of HTML, like what you'd find in HTML email and the like."
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+I didn't find any in either ELPA nor MELPA, at least. There's <a href="https://github.com/lordpretzel/xwidgets-reuse">xwidgets-reuse</a>, which enables reuse of xwidgets sessions and comes with an <a href="https://github.com/lordpretzel/xwidgets-reuse/#example">example setup for elfeed entry browsing</a> in its documentation, though. Do check it out!
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p>Published 2023-05-22, last modified 2023-05-22.</p>
+<p>
+  All original content is licensed under a custom <a href="/license/">license</a>.
+</p>
+</div>
+</body>
+</html>

@@ -8,6 +8,6 @@
 #+html_head_extra: <meta name="og:title" content="Fritz Grabo">
 #+html_head_extra: <meta name="og:description" content="The personal website of Fritz Grabo.">
 
-I'm a self-employed senior software engineer currently living in Krems, Austria ([[./about/index.org][more]]).
+I'm a self-employed senior software engineer currently living in St. Pölten, Austria ([[./about/index.org][more]]).
 
 This is my personal website; thanks for stopping by.

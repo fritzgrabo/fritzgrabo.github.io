@@ -214,7 +214,8 @@
 
 (defun serve ()
   "Foobar."
-  (let ((httpd-port 8088))
+  (let ((httpd-host "0.0.0.0")
+        (httpd-port 8088))
     (httpd-serve-directory site--build-directory)))
 
 (provide 'build)

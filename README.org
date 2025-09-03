@@ -5,3 +5,11 @@ All original text is available under a [[http://creativecommons.org/licenses/by-
 All the original code, as well as its inline documentation, is available under the terms of the [[https://www.gnu.org/licenses/gpl-3.0.html][GNU General Public License Version 3]] or any later version. This obviously doesn't apply to files in the ~/contrib~ folder.
 
 For any further questions, feel free to contact me.
+
+Development Notes:
+
+#+begin_src shell
+docker build -t fritzgrabo.github.io .
+docker run -it --rm -v "$(pwd)":/workspace fritzgrabo.github.io
+docker run -it --rm -p 80:8088 --name fritzgrabo.github.io -v "$(pwd)":/workspace fritzgrabo.github.io make serve
+#+end_src

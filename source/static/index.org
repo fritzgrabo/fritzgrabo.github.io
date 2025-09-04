@@ -8,6 +8,16 @@
 #+html_head_extra: <meta name="og:title" content="Fritz Grabo">
 #+html_head_extra: <meta name="og:description" content="The personal website of Fritz Grabo.">
 
-I'm a father of two (master of none), and a self-employed senior software engineer and consultant with 20+ years experience in building and scaling web applications, neatly tucked away near the woods in Austria ([[./about/index.org][more]]).
+* 10 seconds
 
-This is my personal website; thanks for stopping by.
+I'm a father of two (master of none), and a self-employed senior software engineer and consultant with 20+ years experience in building and scaling web applications, neatly tucked away near the woods in Austria.
+
+* On work
+
+I'm passionate about solving challenging and meaningful problems that help make the world a better place.
+
+My focus tends to fall on the backend and operations side of things, though I enjoy working on all parts and levels of a system. My preferred stack includes Ruby, Rails, PostgreSQL, and plain HTML/CSS/JavaScript or Vue.js. For operations, I'm comfortable with everything from old-school root servers to modern cloud solutions like Kubernetes.
+
+I enjoy collaborating with fellow engineers, designers, product managers and customers to ship reliable, elegant software. Teams have valued my positive effect on team culture, my mentoring mindset, and the overall level of quality I help establish in all the little details. I've worked remotely for most of my career and thrive in distributed teams.
+
+If that sounds like a match, please do [[https:/contact/][reach out!]]

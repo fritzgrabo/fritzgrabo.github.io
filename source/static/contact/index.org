@@ -1,9 +1,5 @@
-#+title: About
-#+description: About Fritz Grabo
-
-tbd
-
-Contact
+#+title: Contact
+#+description: Contact Fritz Grabo
 
 Shoot me an e-mail at ~hello~ at this site's domain.
 

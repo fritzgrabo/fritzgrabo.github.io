@@ -21,3 +21,9 @@ My focus tends to fall on the backend and operations side of things, though I en
 I enjoy collaborating with fellow engineers, designers, product managers and customers to ship reliable, elegant software. Teams have valued my positive effect on team culture, my mentoring mindset, and the overall level of quality I help establish in all the little details. I've worked remotely for most of my career and thrive in distributed teams.
 
 If that sounds like a match, please do [[https:/contact/][reach out!]]
+
+* More
+
+- Check out the [[https:/now/]["now" page]] to see what I'm doing now.
+- Flip through [[https:/posts/][the blog posts]] for more in-depth thoughts on +life+ Emacs, mostly.
+- Browse my @@html:<a href="https://github.com/fritzgrabo" target="_blank">GitHub profile</a>@@ if you're interested in my Open Source work.

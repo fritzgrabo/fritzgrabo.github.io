@@ -22,6 +22,10 @@ I enjoy collaborating with fellow engineers, designers, product managers and cus
 
 If that sounds like a match, please do [[https:/contact/][reach out!]]
 
+* Network
+
+I've worked with these awesome folks on many, many successful projects throughout the years. We regularly team up to tackle the challenging, bigger projects together: @@html:<a href="https://wolfgangrittner.dev" target="_blank">Wolfgang</a>@@, @@html:<a href="https://christoph.luppri.ch" target="_blank">Christoph</a>@@, @@html:<a href="https://embedded-focus.com" target="_blank">Rainer</a>@@.
+
 * More
 
 - Check out the [[https:/now/]["now" page]] to see what I'm doing now.

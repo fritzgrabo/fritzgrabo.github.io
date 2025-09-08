@@ -26,6 +26,10 @@ Technology-wise, my focus tends to fall on the backend and operations side of th
 
 If one of these sound like a match, do [[file:contact/index.org][reach out!]]
 
+* Network
+
+I've worked with these awesome folks on many, many successful projects throughout the years. We regularly team up to tackle the challenging, bigger projects together: @@html:<a href="https://wolfgangrittner.dev" target="_blank">Wolfgang</a>@@, @@html:<a href="https://christoph.luppri.ch" target="_blank">Christoph</a>@@, @@html:<a href="https://embedded-focus.com" target="_blank">Rainer</a>@@.
+
 * More
 
 - Check out the [[file:now/index.org]["now" page]] to see what I'm doing now.

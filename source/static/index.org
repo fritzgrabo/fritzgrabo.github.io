@@ -25,3 +25,9 @@ Technology-wise, my focus tends to fall on the backend and operations side of th
 @@html:&bull;&ensp;@@ *I draw from 20+ years of experience to consult on tech topics.* Let's just say I've seen a lot so you don't have to :) Specifically, if you're growing fast and want to get it right the first time, I will help defuse the costly gotchas, validate your approach, and guide your decisions.
 
 If one of these sound like a match, do [[file:contact/index.org][reach out!]]
+
+* More
+
+- Check out the [[file:now/index.org]["now" page]] to see what I'm doing now.
+- Flip through [[file:posts/index.org][the blog posts]] for more in-depth thoughts on +life+ Emacs, mostly.
+- Browse the @@html:<a href="https://github.com/fritzgrabo" target="_blank">GitHub profile</a>@@ if you're interested in my Open Source work.

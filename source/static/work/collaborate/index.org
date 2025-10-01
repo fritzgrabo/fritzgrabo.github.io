@@ -1,0 +1,8 @@
+#+title: I work embedded in your team
+#+description: Collaborate | Fritz Grabo
+
+I enjoy collaborating with engineers, designers, product managers and customers to ship robust, elegant software, reliably and on time.
+
+Clients @@html:<a href="https://www.linkedin.com/in/fritzgrabo/details/recommendations" target="_blank">@@have valued@@html:</a>@@ my positive effect on team culture, my mentoring mindset, and the overall level of quality I help establish in all the little details.
+
+With a career largely built around remote work, I thrive in distributed teams.

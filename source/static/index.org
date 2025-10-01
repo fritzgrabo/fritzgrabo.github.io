@@ -14,15 +14,13 @@ I'm a *@@html:<mark>@@self-employed senior software engineer and consultant@@htm
 
 * On work
 
-I'm passionate about solving challenging and meaningful problems that help make the world a better place.
+I'm passionate about solving challenging and meaningful problems that help make the world a better place. Specifically, ...
+
+- [[file:work/collaborate/index.org][I work embedded in your team]] to boost its effectiveness.
+- [[file:work/execute/index.org][I architect and implement software projects]] from A to Z.
+- [[file:work/consult/index.org][I consult on tech topics]], drawing from 20+ years of experience.
 
 Technology-wise, my focus tends to fall on the backend and operations side of things, though I enjoy working on all parts and levels of a system. My preferred stack includes Ruby, Rails, PostgreSQL, and HTML/CSS/Hotwire. For operations, I'm comfortable with everything from old-school root servers to modern cloud solutions like Google Cloud or Kubernetes.
-
-@@html:&bull;&ensp;@@ *I work embedded in your team to boost its effectiveness.* I enjoy collaborating with fellow engineers, designers, product managers and customers to ship reliable, elegant software. Clients @@html:<a href="https://www.linkedin.com/in/fritzgrabo/details/recommendations" target="_blank">@@have valued@@html:</a>@@ my positive effect on team culture, my mentoring mindset, and the overall level of quality I help establish in all the little details. I've worked remotely for most of my career and thrive in distributed teams.
-
-@@html:&bull;&ensp;@@ *I architect and implement software projects from A to Z for startups and businesses.* I dig deep until we both grok your actual needs, then create a simple, turnkey solution that meets them perfectly. Expect boring, trusted technology and a deliverable that's easy to understand, operate, and maintain long-term.
-
-@@html:&bull;&ensp;@@ *I draw from 20+ years of experience to consult on tech topics.* Let's just say I've seen a lot so you don't have to :) Specifically, if you're growing fast and want to get it right the first time, I will help defuse the costly gotchas, validate your approach, and guide your decisions.
 
 If one of these sound like a match, do [[file:contact/index.org][reach out!]]
 

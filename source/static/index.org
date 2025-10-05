@@ -10,17 +10,28 @@
 
 * 10 seconds
 
-I'm a *@@html:<mark>@@self-employed senior software engineer and consultant@@html:</mark>@@* with 20+ years experience in building and scaling web applications, neatly tucked away near the woods in Austria with my partner and our two kids.
+I'm a *@@html:<mark>@@self-employed senior software engineer and consultant@@html:</mark>@@* with 20+ years experience in building, scaling and operating web applications, neatly tucked away near the woods in Austria with my partner and our two kids.
 
 * On work
 
-I'm passionate about solving challenging and meaningful problems that help make the world a better place. Specifically, ...
+I'm passionate about solving challenging and meaningful problems that help make the world a better place, through collaboration, deep thinking, and software.
 
-- [[file:work/collaborate/index.org][I work embedded in your team]] to boost its effectiveness.
-- [[file:work/execute/index.org][I architect and implement software projects]] from A to Z.
-- [[file:work/consult/index.org][I consult on tech topics]], drawing from 20+ years of experience.
+Let's talk if you ...
 
-Technology-wise, my focus tends to fall on the backend and operations side of things, though I enjoy working on all parts and levels of a system. My preferred stack includes Ruby, Rails, PostgreSQL, and HTML/CSS/Hotwire. For operations, I'm comfortable with everything from old-school root servers to modern cloud solutions like Google Cloud or Kubernetes.
+- *[[file:work/collaborate/index.org][Need an experienced web dev on the team?]]*
+  *I embed remotely with your team* for weeks or months to boost velocity hands-on, get projects back on track, and level everyone up along the way.
+
+
+- *[[file:work/execute/index.org][Have an idea, but no team to build it?]]*
+  *I build custom software.* Using boring, battle-tested technology and leveraging a trusted network of specialists as needed, I turn your concept into solid and scalable software ready for production.
+
+
+- *[[file:work/consult/index.org][Want a second opinion or in-depth review?]]*
+  *I share my experience.* Drawing from 20+ years of experience both in fast-growing startups and established enterprises, I provide actionable guidance on typical challenges like taming code complexity, enabling growth, automating operations, etc.
+
+*Focus areas*: while I enjoy working on all parts and levels of a system, I specialize in backend architecture, implementation and operations. 15 years worth of expertise in Ruby on Rails in all shapes and sizes is the secret super power that lets me build capable, high-quality services, fast. Recently, I've been diving into modern Server Side Rendering approaches like Hotwire to bridge the backend/frontend divide.
+
+*Technology*: my preferred stack includes Ruby, Ruby on Rails, PostgreSQL, and HTML / CSS / Hotwire, with lots of experience in Python and FastAPI, too. For operations, I'm comfortable with everything from old-school root servers to modern cloud solutions like Google Cloud or Kubernetes. 
 
 If one of these sound like a match, do [[file:contact/index.org][reach out!]]
 

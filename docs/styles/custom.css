@@ -3,3 +3,14 @@ mark {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
 }
+
+@media (max-width: 480px) {
+  ul {
+    padding-left: 24px;
+  }
+}
+
+#text-on-work li b:first-child {
+  display: block;
+  padding-bottom: 0.33rem;
+}

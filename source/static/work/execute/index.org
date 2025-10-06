@@ -1,8 +1,24 @@
-#+title: I architect and implement software projects
-#+description: Execute | Fritz Grabo
+#+title: Project Execution
+#+description: Project Execution | Fritz Grabo
 
-I architect and implement software projects from A to Z for startups and businesses.
+@@html:<div class="service-questions">@@
+- Know what you want, but have no one to build it?
+- Want to validate an idea before investing in it?
+- Manual processes preventing you from scaling?
+@@html:</div>@@
 
-I dig deep until we both grok your actual needs, then create a simple, turnkey solution that meets them perfectly.
+*@@html:<mark>@@I build custom software. Using boring, battle-tested technology and leveraging a trusted network of specialists as needed, I turn your concept into solid and scalable software ready for production.@@html:</mark>@@*
 
-Expect boring, trusted technology and a deliverable that's easy to understand, operate, and maintain long-term.
+Here's what you get:
+
+- *End-to-end execution.* I handle everything from architecture and implementation to deployment and handoff, so you get a complete, working solution. Expect a seamless process and a system that's ready to use.
+
+
+- *Deep discovery, simple solutions.* I dig deep until we both fully understand your actual needs, then design the simplest solution that solves the real problem. Expect a system that does exactly what you need without unnecessary complexity or bloat, keeping costs down.
+
+
+- *Built for the long haul.* Using proven, maintainable technology, I create systems that start simple but can grow with you: easy to operate today and straightforward for any developer to extend tomorrow. Expect low maintenance overhead and a foundation that won't need rebuilding as you scale.
+
+Projects typically range from a few weeks to several months. We'll start with a discovery phase to nail down a minimal set of requirements that makes sense to start with, then move into iterative development with regular check-ins. You'll see working software early and often, not just at the end.
+
+Sounds good? [[file:../../contact/index.org][Let's talk!]]

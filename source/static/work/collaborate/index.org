@@ -1,8 +1,26 @@
-#+title: I work embedded in your team
-#+description: Collaborate | Fritz Grabo
+#+title: Team Collaboration
+#+description: Team Collaboration | Fritz Grabo
 
-I enjoy collaborating with engineers, designers, product managers and customers to ship robust, elegant software, reliably and on time.
+@@html:<div class="service-questions">@@
+- Team stuck or moving too slow?
+- Development bottlenecked?
+- Struggling with code quality or complexity?
+@@html:</div>@@
 
-Clients @@html:<a href="https://www.linkedin.com/in/fritzgrabo/details/recommendations" target="_blank">@@have valued@@html:</a>@@ my positive effect on team culture, my mentoring mindset, and the overall level of quality I help establish in all the little details.
+*@@html:<mark>@@I embed remotely with your team for weeks or months to boost velocity hands-on, get projects back on track, and level everyone up along the way.@@html:</mark>@@*
 
-With a career largely built around remote work, I thrive in distributed teams.
+Working from Austria, I'm experienced at collaborating across time zones with teams around the globe.
+
+Here's what you get:
+
+- *Unblocking and accelerating.* We'll ship new features while we simplify complex designs and prepare systems to grow swiftly. Expect a significant drop in the team's time to deliver.
+
+
+- *Elevating code quality.* I'll help implement established best practices, from the very basics to advanced levels. Expect clean, maintainable code and atomic commits; future-proof, self-documenting APIs; meaningful logs and metrics to power monitoring and alerting; fully automated deployments; and lots more -- it all compounds into lasting gains in quality, velocity and value.
+
+
+- *Leveling up the team.* Through pairing, thoughtful code reviews, and daily collaboration, junior developers gain confidence and senior developers pick up new techniques. Expect the team to take on more responsibilities in no time.
+
+Regarding tech stack alignment, 15 years of experience with Ruby, Ruby on Rails, PostgreSQL, and related technologies means that I'm most effective in that stack. While I adapt to adjacent tools (like Python and FastAPI, etc.) swiftly, the best collaborations happen when our stacks align -- ensuring I contribute at full capacity from the start.
+
+Sounds good? [[file:../../contact/index.org][Let's talk!]]

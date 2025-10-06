@@ -1,14 +1,18 @@
 #+title: Contact
-#+description: Contact Fritz Grabo
+#+description: Contact | Fritz Grabo
 
-Shoot me an e-mail at ~hello~ at this site's domain.
+** Let's get in touch
 
-Online Presences
+*@@html:<mark>@@I'm currently open for work!@@html:</mark>@@*
 
-[[https://github.com/fritzgrabo][github/fritzgrabo]]@@html:<br>@@
-[[https://linkedin.com/in/fritzgrabo/][linkedin/fritzgrabo]]
+Whether you're looking to collaborate, have questions about my services, or just want to say hello -- I'd love to hear from you.
 
-Legal Notice
+Shoot me an e-mail at [[mailto:hello@fritzgrabo.com][hello@fritzgrabo.com]] or connect on:
+
+- GitHub: [[https://github.com/fritzgrabo][github/fritzgrabo]]
+- LinkedIn: [[https://linkedin.com/in/fritzgrabo/][linkedin/fritzgrabo]]
+
+** Legal Notice
 
 Fritz Grabo@@html:<br>@@
 Radlberger Hauptstraße 29e, 3105 St. Pölten, Austria@@html:<br>@@

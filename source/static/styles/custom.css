@@ -19,6 +19,11 @@ mark {
   padding-bottom: 0.33rem;
 }
 
+.now-date {
+  font-family: monospace;
+  font-size: small;
+}
+
 .service-questions {
   margin-bottom: 2rem;
 }

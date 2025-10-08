@@ -196,7 +196,7 @@
         (org-html-head (site--read-file "partials/head.html"))
         (org-html-head-include-default-style nil)
         (org-html-head-include-scripts nil)
-        (org-html-link-use-abs-url nil)
+        (org-html-link-use-abs-url nil) ;; also see main.js
         (org-html-metadata-timestamp-format site--date-format-string)
         (org-html-postamble (site--read-file "partials/footer.html"))
         (org-html-preamble (site--read-file "partials/header.html"))

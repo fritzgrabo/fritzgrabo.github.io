@@ -37,10 +37,10 @@ If that sounds like a match, do [[file:contact/index.org][reach out!]]
 
 * Network
 
-I've worked with these awesome folks on many, many successful projects throughout the years. We regularly team up to tackle the challenging, bigger projects together: @@html:<a href="https://wolfgangrittner.dev" target="_blank">Wolfgang</a>@@, @@html:<a href="https://christoph.luppri.ch" target="_blank">Christoph</a>@@, @@html:<a href="https://embedded-focus.com" target="_blank">Rainer</a>@@.
+I've worked with these awesome folks on many, many successful projects throughout the years. We regularly team up to tackle the challenging, bigger projects together: [[https://wolfgangrittner.dev][Wolfgang]], [[https://christoph.luppri.ch][Christoph]], [[https://embedded-focus.com][Rainer]].
 
 * More
 
 - Check out the [[file:now/index.org]["now" page]] to see what I'm doing now.
 - Flip through [[file:posts/index.org][the blog posts]] for more in-depth thoughts on +life+ Emacs, mostly.
-- Browse the @@html:<a href="https://github.com/fritzgrabo" target="_blank">GitHub profile</a>@@ if you're interested in my Open Source work.
+- Browse the [[https://github.com/fritzgrabo][GitHub profile]] if you're interested in my Open Source work.

@@ -2,6 +2,12 @@
   line-height: 1.4;
 }
 
+#postamble,
+#postamble a,
+#postamble a:visited {
+  color: #999999;
+}
+
 mark {
   background-color: #ffeecc;
   padding-left: 0.25rem;

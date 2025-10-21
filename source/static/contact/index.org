@@ -9,6 +9,7 @@ Whether you're looking to collaborate, have questions about my services, or just
 
 Shoot me an e-mail at [[mailto:hello@fritzgrabo.com][hello@fritzgrabo.com]] or connect on:
 
+- Bluesky: [[https://bsky.app/profile/fritzgrabo.com][@fritzgrabo.com]]
 - GitHub: [[https://github.com/fritzgrabo][github/fritzgrabo]]
 - LinkedIn: [[https://linkedin.com/in/fritzgrabo/][linkedin/fritzgrabo]]
 

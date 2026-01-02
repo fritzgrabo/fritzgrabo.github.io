@@ -23,4 +23,6 @@ Here's what you get:
 
 Regarding tech stack alignment, 15 years of experience with Ruby, Ruby on Rails, PostgreSQL, and related technologies means that I'm most effective in that stack. While I adapt to adjacent tools (like Python and FastAPI, etc.) swiftly, the best collaborations happen when our stacks align -- ensuring I contribute at full capacity from the start.
 
+If your challenges require more hands or broader capabilities, check out my team at [[https://awesome.at][awesome.at]]: we're three battle-tested senior engineers who've successfully worked together on a wide range of projects for over 12 years, ready to tackle yours next!
+
 Sounds good? [[file:../../contact/index.org][Let's talk!]]

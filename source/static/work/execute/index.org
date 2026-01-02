@@ -21,4 +21,6 @@ Here's what you get:
 
 Projects typically range from a few weeks to several months. We'll start with a discovery phase to nail down a minimal set of requirements that makes sense to start with, then move into iterative development with regular check-ins. You'll see working software early and often, not just at the end.
 
+If your project requires a larger team or more comprehensive capabilities, I team up with my friends as [[https://mitfreuden.com][MitFreuden]]: we're four experienced developers who've worked together for years, ready to tackle more demanding projects with full attention and true commitment.
+
 Sounds good? [[file:../../contact/index.org][Let's talk!]]

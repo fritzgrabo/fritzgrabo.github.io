@@ -138,7 +138,7 @@
 
    (list "posts-assets"
          :base-directory (expand-file-name "posts" site--source-directory)
-         :base-extension (regexp-opt '("png" "jpg" "jpeg" "gif" "pdf" "svg"))
+         :base-extension (regexp-opt '("png" "jpg" "jpeg" "gif" "pdf" "svg" "txt"))
          :publishing-directory (expand-file-name "posts" site--build-directory)
          :recursive t
          :publishing-function #'org-publish-attachment)

@@ -106,6 +106,31 @@
       ;; (insert-file-contents file)
       (buffer-string))))
 
+(defun site--exclude-non-emacs-posts (project-plist)
+  "PROJECT-PLIST."
+  (let* ((base-dir (plist-get project-plist :base-directory))
+         (exclude-regexp (plist-get project-plist :exclude))
+         (additional-files-to-exclude '()))
+    (dolist (file (directory-files-recursively base-dir "\\.org$"))
+      (let ((file-relative-name (file-relative-name file base-dir)))
+        (unless (and exclude-regexp (string-match-p exclude-regexp file-relative-name))
+          (unless (site--file-has-file-tag-p file "emacs")
+            (push file-relative-name additional-files-to-exclude)))))
+    (when additional-files-to-exclude
+      (plist-put project-plist :exclude
+                 (concat (or exclude-regexp "")
+                         (if exclude-regexp "\\|" "")
+                         (string-join additional-files-to-exclude "\\|"))))))
+
+(defun site--file-has-file-tag-p (file tag)
+  "FILE TAG."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (let ((case-fold-search t))
+      (when (re-search-forward "^#\\+FILETAGS:\\s-*\\(.*\\)$" nil t)
+        (member tag (split-string (match-string 1) ":" t))))))
+
 ;; Required Configuration
 
 (add-to-list 'org-export-filter-link-functions #'site--filter-local-links)
@@ -117,7 +142,7 @@
          :base-extension "org"
          :publishing-directory (expand-file-name "posts" site--build-directory)
          :recursive t
-         :exclude "^rss.org\\|^index.org"
+         :exclude "^\\(index\\|^rss\\|^rss-emacs\\).org"
          :publishing-function #'site--org-html-publish-post-to-html
          :html-postamble (site--read-files "partials/posts/footer.html" "partials/footer.html"))
 
@@ -126,7 +151,7 @@
          :base-extension "org"
          :publishing-directory (expand-file-name "posts" site--build-directory)
          :recursive t
-         :exclude "^rss.org"
+         :exclude "^\\(index\\|^rss\\|^rss-emacs\\).org"
          :publishing-function #'site--org-html-publish-sitemap-to-html
          :auto-sitemap t
          :sitemap-filename "index.org"
@@ -148,11 +173,30 @@
          :base-extension "org"
          :publishing-directory (expand-file-name "posts" site--build-directory)
          :recursive t
-         :exclude "^index.org"
+         :exclude "^\\(index\\|rss\\|rss-emacs\\).org"
          :publishing-function #'site--org-rss-publish-sitemap-to-rss
          :html-link-home (concat site--url "/posts/")
          :auto-sitemap t
          :sitemap-filename "rss.org"
+         :sitemap-title site--title
+         :sitemap-style 'list
+         :sitemap-sort-files 'anti-chronologically
+         :sitemap-function #'site--format-rss-feed
+         :sitemap-format-entry #'site--format-rss-feed-entry
+         :rss-image-url nil ;; TODO
+         :rss-extension "xml")
+
+   (list "posts-rss-emacs"
+         :base-directory (expand-file-name "posts" site--source-directory)
+         :base-extension "org"
+         :publishing-directory (expand-file-name "posts" site--build-directory)
+         :preparation-function #'site--exclude-non-emacs-posts
+         :recursive t
+         :exclude "^\\(index\\|rss\\|rss-emacs\\).org"
+         :publishing-function #'site--org-rss-publish-sitemap-to-rss
+         :html-link-home (concat site--url "/posts/")
+         :auto-sitemap t
+         :sitemap-filename "rss-emacs.org"
          :sitemap-title site--title
          :sitemap-style 'list
          :sitemap-sort-files 'anti-chronologically
@@ -183,7 +227,7 @@
          :publishing-function #'org-publish-attachment)
 
    (list "site"
-         :components '("posts-org" "posts-sitemap" "posts-assets" "posts-rss" "static-org" "static-assets" "cname"))))
+         :components '("posts-org" "posts-sitemap" "posts-assets" "posts-rss" "posts-rss-emacs" "static-org" "static-assets" "cname"))))
 
 (defun build ()
   "Foobar."

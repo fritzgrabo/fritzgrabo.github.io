@@ -1,5 +1,6 @@
 #+title: Org-capturing live Jira Issues
 #+date: [2022-05-08 Sun]
+#+filetags: emacs
 
 #+html_head_extra: <meta name="twitter:card" content="summary">
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">

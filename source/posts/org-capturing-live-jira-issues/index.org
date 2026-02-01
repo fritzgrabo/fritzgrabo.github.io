@@ -6,8 +6,8 @@
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="Org-capturing live Jira Issues">
 #+html_head_extra: <meta name="twitter:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
-#+html_head_extra: <meta name="og:title" content="Org-capturing live Jira Issues">
-#+html_head_extra: <meta name="og:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
+#+html_head_extra: <meta property="og:title" content="Org-capturing live Jira Issues">
+#+html_head_extra: <meta property="og:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
 
 * Problem Statement
 

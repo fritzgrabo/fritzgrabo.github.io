@@ -6,8 +6,8 @@
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="Introducing elfeed-webkit">
 #+html_head_extra: <meta name="twitter:description" content="Render elfeed entries in embedded webkit widgets.">
-#+html_head_extra: <meta name="og:title" content="Introducing elfeed-webkit">
-#+html_head_extra: <meta name="og:description" content="Render elfeed entries in embedded webkit widgets.">
+#+html_head_extra: <meta property="og:title" content="Introducing elfeed-webkit">
+#+html_head_extra: <meta property="og:description" content="Render elfeed entries in embedded webkit widgets.">
 
 * Elfeed is great, but ...
 

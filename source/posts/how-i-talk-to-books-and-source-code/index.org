@@ -5,8 +5,8 @@
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="How I Talk to Books and Source Code">
 #+html_head_extra: <meta name="twitter:description" content="An AI-powered approach to staying current in your expertise by connecting comprehensive technical books with real-world codebases to learn what's relevant and new for you in an efficient, interactive way.">
-#+html_head_extra: <meta name="og:title" content="How I Talk to Books and Source Code">
-#+html_head_extra: <meta name="og:description" content="An AI-powered approach to staying current in your expertise by connecting comprehensive technical books with real-world codebases to learn what's relevant and new for you in an efficient, interactive way.">
+#+html_head_extra: <meta property="og:title" content="How I Talk to Books and Source Code">
+#+html_head_extra: <meta property="og:description" content="An AI-powered approach to staying current in your expertise by connecting comprehensive technical books with real-world codebases to learn what's relevant and new for you in an efficient, interactive way.">
 
 * Intro
 

@@ -5,8 +5,8 @@
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="Fritz Grabo">
 #+html_head_extra: <meta name="twitter:description" content="The personal website of Fritz Grabo.">
-#+html_head_extra: <meta name="og:title" content="Fritz Grabo">
-#+html_head_extra: <meta name="og:description" content="The personal website of Fritz Grabo.">
+#+html_head_extra: <meta property="og:title" content="Fritz Grabo">
+#+html_head_extra: <meta property="og:description" content="The personal website of Fritz Grabo.">
 
 * 10 seconds
 

@@ -5,9 +5,12 @@
 #+html_head_extra: <meta name="twitter:card" content="summary">
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="Org-capturing live Jira Issues">
+#+html_head_extra: <meta name="twitter:image" content="https://fritzgrabo.com/posts/org-capturing-live-jira-issues/og-image.jpeg">
+
 #+html_head_extra: <meta name="twitter:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
 #+html_head_extra: <meta property="og:title" content="Org-capturing live Jira Issues">
 #+html_head_extra: <meta property="og:description" content="Org-capture a live Jira issue with all its meta-data into an Org-mode heading.">
+#+html_head_extra: <meta property="og:image" content="https://fritzgrabo.com/posts/org-capturing-live-jira-issues/og-image.jpeg">
 
 * Problem Statement
 

@@ -4,9 +4,12 @@
 #+html_head_extra: <meta name="twitter:card" content="summary">
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="How I Talk to Books and Source Code">
+#+html_head_extra: <meta name="twitter:image" content="https://fritzgrabo.com/posts/how-i-talk-to-books-and-source-code/og-image.jpeg">
 #+html_head_extra: <meta name="twitter:description" content="An AI-powered approach to staying current in your expertise by connecting comprehensive technical books with real-world codebases to learn what's relevant and new for you in an efficient, interactive way.">
+
 #+html_head_extra: <meta property="og:title" content="How I Talk to Books and Source Code">
 #+html_head_extra: <meta property="og:description" content="An AI-powered approach to staying current in your expertise by connecting comprehensive technical books with real-world codebases to learn what's relevant and new for you in an efficient, interactive way.">
+#+html_head_extra: <meta property="og:image" content="https://fritzgrabo.com/posts/how-i-talk-to-books-and-source-code/og-image.jpeg">
 
 * Intro
 

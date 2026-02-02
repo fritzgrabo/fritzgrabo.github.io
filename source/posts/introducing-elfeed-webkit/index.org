@@ -5,9 +5,12 @@
 #+html_head_extra: <meta name="twitter:card" content="summary">
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="Introducing elfeed-webkit">
+#+html_head_extra: <meta name="twitter:image" content="https://fritzgrabo.com/posts/introducing-elfeed-webkit/og-image.jpeg">
+
 #+html_head_extra: <meta name="twitter:description" content="Render elfeed entries in embedded webkit widgets.">
 #+html_head_extra: <meta property="og:title" content="Introducing elfeed-webkit">
 #+html_head_extra: <meta property="og:description" content="Render elfeed entries in embedded webkit widgets.">
+#+html_head_extra: <meta property="og:image" content="https://fritzgrabo.com/posts/introducing-elfeed-webkit/og-image.jpeg">
 
 * Elfeed is great, but ...
 

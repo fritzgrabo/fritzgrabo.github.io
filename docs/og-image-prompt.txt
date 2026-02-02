@@ -1,0 +1,23 @@
+fritz_person!
+
+fritz_person lean, tall man in his mid-forties, high forehead, light skin with slight olive undertone, thin slightly arched eyebrows, pronounced cheekbones, narrow straight nose, straight dark brown hair tied back cleanly into a low mid-size bun, receding hairline at the temples, short three-day beard on chin and cheeks and light short mustache, natural realistic proportions, Lindberg Bo glasses, white t-shirt, light gray slim jeans
+
+late 19th century scene
+
+fritz_person seated at wooden workbench in middle distance, adjusting intricate mechanical software engineering device that prominently features a well visible red ruby stone that looks like the ruby programming language logo with focused attention and a light, warm smile, open technical manual beside tools, organized workspace, wooden chair
+
+large window to the left and large window in the background, both windows showing rural countryside with rolling hills and distant trees, warm afternoon light streaming in
+
+inventor's workshop interior densely populated with curiosities, all of which are clearly visible: lots of shelves bowing under the weight of intricate clockwork automata mid-assembly, stacked leather-bound technical folios and loose blueprint scrolls, brass gear trains and escapement mechanisms pinned to small display boards, chemical glass flasks and alembics holding luminous liquids in deep amber and violet and emerald, a mortar and pestle beside dried botanical specimens including curious fungi, small glowing orbs in wire cradles casting warm iridescent light, arcane diagrams and geometric sigils on small pinned papers alongside miniature engineering sketches, an abacus of unusual design, wooden crates half-unpacked with straw, labelled specimen drawers, candles burned to different heights with wax pooled on saucers, a hanging dried herb bundle, small ceramic crucibles and weighing scales, coiled copper wire on wooden spools, a taxidermied small creature on a shelf, tiny glass vials in a wooden rack with cork stoppers, an open leather satchel spilling papers, a magnifying glass on a jointed brass arm, mysterious small locked boxes with ornate keyholes, a wax seal stamp and melted wax, scattered smooth river stones with symbols carved into them — the workshop of someone equally at home in the rational and the mysterious
+
+(a seven year old girl with dark blonde short shoulder-length hair and a white shirt:1.2) and (a nine year old boy slightly taller than the girl with dark blonde hair and a blue-gray shirt:1.2) standing in front of a workbench in the background behind fritz_person and playing together, in soft focus in background
+
+framed painting on the wall, shows alpine nature setting
+
+oil painting, impressionism, late 19th century, Lemokh and Spitzweg and Repin style, coarse visible brushwork, muted earth tones, soft window light, painterly not photorealistic, atmospheric depth, no frame
+
+correct anatomy
+correct hands and fingers
+realistic eyes
+
+composition: subject positioned at center taking one-half frame height, workbench extending across lower third, large window on left and large window in the background showing pastoral landscape, background figures in period clothing creating social warmth and depth, warm golden light from window, clear foreground detail softening to atmospheric background and landscape, strict naturalistic perspective throughout: foreground subject largest, midground workshop details smaller, background children to the right without overlap with fritz_person and landscape smallest and softest — no element breaks scale hierarchy, generous margins, 1584x396 horizontal banner format

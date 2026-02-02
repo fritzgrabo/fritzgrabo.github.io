@@ -6,8 +6,11 @@
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="Introducing ob-dsq">
 #+html_head_extra: <meta name="twitter:description" content="Babel functions for the `dsq` CLI tool by Multiprocess Labs.">
+#+html_head_extra: <meta name="twitter:image" content="https://fritzgrabo.com/posts/introducing-ob-dsq/og-image.jpeg">
+
 #+html_head_extra: <meta property="og:title" content="Introducing ob-dsq">
 #+html_head_extra: <meta property="og:description" content="Babel functions for the `dsq` CLI tool by Multiprocess Labs.">
+#+html_head_extra: <meta property="og:image" content="https://fritzgrabo.com/posts/introducing-ob-dsq/og-image.jpeg">
 
 * Problem Statement
 

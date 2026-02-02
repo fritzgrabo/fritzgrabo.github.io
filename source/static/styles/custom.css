@@ -43,3 +43,8 @@ mark {
 .service-questions li + li {
   padding-top: 0.33rem;
 }
+
+.og-image.post-image {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}

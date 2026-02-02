@@ -69,7 +69,7 @@
 (defun site--format-sitemap (title list)
   "TITLE LIST."
   (concat
-   (site--read-file "partials/posts/preamble.org")
+   (site--read-file "partials/posts/sitemap-header-inner.org")
    (org-list-to-org list)))
 
 (defun site--format-sitemap-entry (entry style project)
@@ -144,7 +144,8 @@
          :recursive t
          :exclude "^\\(index\\|^rss\\|^rss-emacs\\).org"
          :publishing-function #'site--org-html-publish-post-to-html
-         :html-postamble (site--read-files "partials/posts/footer.html" "partials/footer.html"))
+         :html-preamble (site--read-files "partials/header.html" "partials/posts/header-inner.html")
+         :html-postamble (site--read-files "partials/posts/footer-inner.html" "partials/footer.html"))
 
    (list "posts-sitemap"
          :base-directory (expand-file-name "posts" site--source-directory)

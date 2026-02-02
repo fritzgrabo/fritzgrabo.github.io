@@ -214,7 +214,7 @@
 
    (list "static-assets"
          :base-directory (expand-file-name "static" site--source-directory)
-         :base-extension (regexp-opt '("css" "js" "ico" "png"))
+         :base-extension (regexp-opt '("css" "js" "ico" "png" "jpg" "jpeg" "gif" "pdf" "svg" "txt"))
          :publishing-directory site--build-directory
          :recursive t
          :publishing-function #'org-publish-attachment)

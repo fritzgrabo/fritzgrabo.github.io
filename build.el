@@ -73,7 +73,7 @@
    (org-list-to-org list)))
 
 (defun site--format-sitemap-entry (entry style project)
-  "ENTRY STYLE PROJECT. Styls is assumed to be list."
+  "ENTRY STYLE PROJECT. Style is assumed to be list."
   (let ((title (org-publish-find-title entry project))
         (date (site--format-date-string (org-publish-find-date entry project))))
     (format "%s [[file:%s][%s]]" date entry title)))

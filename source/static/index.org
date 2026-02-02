@@ -4,9 +4,12 @@
 #+html_head_extra: <meta name="twitter:card" content="summary">
 #+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
 #+html_head_extra: <meta name="twitter:title" content="Fritz Grabo">
+#+html_head_extra: <meta name="twitter:image" content="https://fritzgrabo.com/og-image.jpeg">
 #+html_head_extra: <meta name="twitter:description" content="The personal website of Fritz Grabo.">
+
 #+html_head_extra: <meta property="og:title" content="Fritz Grabo">
 #+html_head_extra: <meta property="og:description" content="The personal website of Fritz Grabo.">
+#+html_head_extra: <meta property="og:image" content="https://fritzgrabo.com/og-image.jpeg">
 
 * 10 seconds
 

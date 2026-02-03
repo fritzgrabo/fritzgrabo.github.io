@@ -206,11 +206,21 @@
          :rss-image-url nil ;; TODO
          :rss-extension "xml")
 
-   (list "static-org"
+   (list "static-org-homepage"
+         :base-directory (expand-file-name "static" site--source-directory)
+         :base-extension "org"
+         :publishing-directory site--build-directory
+         :exclude ".*"
+         :include '("index.org")
+         :publishing-function #'org-html-publish-to-html
+         :html-preamble (site--read-files "partials/header.html" "partials/header-homepage-inner.html"))
+
+   (list "static-org-rest"
          :base-directory (expand-file-name "static" site--source-directory)
          :base-extension "org"
          :publishing-directory site--build-directory
          :recursive t
+         :exclude "^index.org"
          :publishing-function #'org-html-publish-to-html)
 
    (list "static-assets"
@@ -228,7 +238,7 @@
          :publishing-function #'org-publish-attachment)
 
    (list "site"
-         :components '("posts-org" "posts-sitemap" "posts-assets" "posts-rss" "posts-rss-emacs" "static-org" "static-assets" "cname"))))
+         :components '("posts-org" "posts-sitemap" "posts-assets" "posts-rss" "posts-rss-emacs" "static-org-homepage" "static-org-rest" "static-assets" "cname"))))
 
 (defun build ()
   "Foobar."

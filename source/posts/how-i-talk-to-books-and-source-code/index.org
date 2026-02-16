@@ -17,9 +17,11 @@ Staying current in your expertise is challenging when technology evolves rapidly
 Lately, I've found an approach that works really well for me:
 I'm using Claude Code to have interactive conversations with both comprehensive technical books and production codebases simultaneously, combining the breadth of formal documentation with the depth and concreteness of real-world implementations.
 
-The approach itself is technology-agnostic -- it works wherever you have access to both quality documentation and real-world code.
+*Update 2026-02-16:* @@html:<mark>@@I've since reworked the workflow described below into a standalone Claude Code skill called "Dev Book Study", available at [[https://github.com/fritzgrabo/dev-book-study][github.com/fritzgrabo/dev-book-study]].@@html:</mark>@@
 
-In this post, I'll demonstrate this approach in the context of the Ruby on Rails framework, where I've been working for 15 years and consider myself an expert.
+The idea itself is technology-agnostic -- it works wherever you have access to both quality documentation and real-world code.
+
+In this post, I'll demonstrate this method in the context of the Ruby on Rails framework, where I've been working for 15 years and consider myself an expert.
 Still, Rails offers such a broad feature set that even experienced developers need efficient ways to catch up on new releases -- my recent focus on backend work meant Rails 8's frontend tooling and updates around Turbo and Hotwire were unfamiliar territory that I wanted to explore.
 
 * Approach

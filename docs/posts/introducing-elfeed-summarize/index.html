@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Introducing ~elfeed-summarize~</title>
+<meta name="author" content="Fritz Grabo" />
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<!-- Stylesheets -->
+<link rel="stylesheet" href="/styles/main.css" />
+<!-- Scripts -->
+<script src="/scripts/main.js"></script>
+<!-- Icons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-6P59FpnaCnQeHg5YYqgLy.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:description" content="Add LLM-powered inline summaries to elfeed.">
+<meta name="twitter:image" content="https://fritzgrabo.com/posts/introducing-elfeed-summarize/og-image.jpeg">
+<meta name="twitter:site" content="@fritzgrabo">
+<meta name="twitter:title" content="Introducing elfeed-summarize">
+<meta property="og:description" content="Add LLM-powered inline summaries to elfeed.">
+<meta property="og:image" content="https://fritzgrabo.com/posts/introducing-elfeed-summarize/og-image.jpeg">
+<meta property="og:title" content="Introducing elfeed-summarize">
+</head>
+<body>
+<div id="preamble" class="status">
+<p>
+  <a href="/">Fritz Grabo</a> /
+  <a href="/#on-work">On Work</a> /
+  <a href="https://raw.githubusercontent.com/fritzgrabo/curriculum-vitae/main/cv.pdf" download="fritz_grabo_cv.pdf">CV</a> /
+  <a href="/now/">Now</a> /
+  <!--<a href="/past/">Past</a> /-->
+  <a href="/posts/">Posts</a>
+  <a href="/posts/rss.xml">(RSS)</a> /
+  <a href="/contact/">Contact</a>
+</p>
+<img class="og-image post-image" loading="lazy" src="og-image.jpeg" />
+</div>
+<div id="content" class="content">
+<h1 class="title">Introducing <code>elfeed-summarize</code>
+<br />
+<span class="subtitle">Published 2026-02-19</span>
+</h1>
+<section id="outline-container-on-consuming-vs-generating" class="outline-2">
+<h2 id="on-consuming-vs-generating">On consuming vs. generating</h2>
+<div class="outline-text-2" id="text-on-consuming-vs-generating">
+<p>
+As I worked on my <a href="../how-i-talk-to-books-and-source-code/">previous post</a> about a Claude Code skill for interactive training sessions, I got introduced to a thought that stuck with me:
+the secret super power of large language models isn't generating content, it's consuming it.
+Writing an essay, drafting code, those are the applications that get most of the attention (and skepticism).
+But asking a model to dive deep into a book, a code base, etc., then answer questions about it?
+That's quieter, more reliable, and surprisingly useful in practice.
+</p>
+
+<p>
+This post is about one such use case: summarizing RSS entries to help decide whether I want to read them.
+</p>
+</div>
+</section>
+<section id="outline-container-the-problem" class="outline-2">
+<h2 id="the-problem">The problem</h2>
+<div class="outline-text-2" id="text-the-problem">
+<p>
+I follow a lot of feeds, and I don't read everything.
+Instead, I scan the headlines and decide what interests me.
+Scanning efficiently requires that the headlines actually tell you something, and well, sometimes they don't.
+</p>
+
+<p>
+Here are a few random recent examples from my feed:
+</p>
+
+<ul class="org-ul">
+<li>Is this a good sign?</li>
+<li>Deep blue</li>
+<li>Fragments: February 13</li>
+</ul>
+
+<p>
+Opening an entry to find out is often self-defeating: at that point, you've already read parts of it.
+</p>
+</div>
+</section>
+<section id="outline-container-enter-elfeed-summarize" class="outline-2">
+<h2 id="enter-elfeed-summarize">Enter <code>elfeed-summarize</code></h2>
+<div class="outline-text-2" id="text-enter-elfeed-summarize">
+<p>
+I use the wonderful <a href="https://github.com/skeeto/elfeed">elfeed</a> as a news reader: it's an extensible Emacs package that handles everything from fetching, storing, reading, tagging, to searching RSS feeds.
+</p>
+
+<p>
+As it happens, the similarly wonderful <a href="https://github.com/ahyatt/llm">llm</a> library provides a unified interface to LLM providers in Emacs; both local ones via Ollama and cloud services like OpenAI or Gemini.
+</p>
+
+<p>
+Connecting the dots seemed straightforward enough, and just a couple of hours later, <a href="https://github.com/fritzgrabo/elfeed-summarize"><code>elfeed-summarize</code></a> adds LLM-powered summaries to elfeed.
+</p>
+
+<p>
+Press <code>z</code> on any entry and a brief summary appears inline as an overlay below the headline in elfeed's "search" view, or as a <code>Summary:</code> header in its "show" view.
+Press <code>z</code> again to hide it.
+</p>
+
+<p>
+The entry's locally cached content is what gets summarized; no network request to the original article is needed.
+</p>
+
+
+<div class="figure">
+<p><img src="elfeed-search-mode.jpeg" alt="An elfeed search buffer; one of the entries displays a summary" />
+</p>
+<p><span class="figure-number">Figure 1: </span>An elfeed search buffer; one of the entries displays a summary</p>
+</div>
+
+<p>
+The goal of a summary here is modest and specific: to help you decide whether an article is worth reading.
+Not to replace reading it, not to give you a false sense of having read it. Just to answer the question "<i>should I open this?</i>" a little faster.
+</p>
+</div>
+</section>
+<section id="outline-container-expanding-incrementally" class="outline-2">
+<h2 id="expanding-incrementally">Expanding incrementally</h2>
+<div class="outline-text-2" id="text-expanding-incrementally">
+<p>
+Sometimes, a single sentence isn't enough: press <code>Z</code> (capital Z) and the package generates an additional paragraph of detail.
+Press it again for another.
+Each expansion builds on what's already there, so you can dial in exactly as much context as you need before committing to the full article.
+</p>
+</div>
+</section>
+<section id="outline-container-choosing-a-provider-with-llm" class="outline-2">
+<h2 id="choosing-a-provider-with-llm">Choosing a provider with <code>llm</code></h2>
+<div class="outline-text-2" id="text-choosing-a-provider-with-llm">
+<p>
+For the use case of potentially summarizing many entries in a single sitting, a local model through <a href="https://ollama.com">Ollama</a> is the natural choice.
+It's free to run, it works offline, and your reading habits stay on your machine.
+A complete setup using Mistral looks like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #800080;">use-package</span> elfeed-summarize
+  <span style="color: #483d8b;">:ensure</span>
+  <span style="color: #483d8b;">:after</span> elfeed
+  <span style="color: #483d8b;">:config</span>
+  (<span style="color: #800080;">setq</span> elfeed-summarize-llm-provider
+        (make-llm-ollama <span style="color: #483d8b;">:chat-model</span> <span style="color: #8b2252;">"mistral:latest"</span>))
+  (elfeed-summarize-mode 1))
+</pre>
+</div>
+
+<p>
+Of course, if you prefer a cloud provider like OpenAI, Gemini, Claude, or any other supported by <code>llm</code>, the configuration is equally simple.
+</p>
+</div>
+</section>
+<section id="outline-container-closing-thoughts" class="outline-2">
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<div class="outline-text-2" id="text-closing-thoughts">
+<p>
+None of this would exist without the work of others.
+Christopher Wellons's <a href="https://github.com/skeeto/elfeed">elfeed</a> is an excellent piece of software that makes extending it genuinely pleasant. Its architecture invites exactly this kind of addition.
+Andrew Hyatt's <a href="https://github.com/ahyatt/llm">llm</a> library saved me from writing provider-specific API calls and from committing to a single service.
+</p>
+
+<p>
+Finally, if you try <code>elfeed-summarize</code> and have thoughts about what works, what doesn't, what you'd want to see, I'd love to <a href="mailto:hello@fritzgrabo.com">hear from you</a>. Thanks!
+</p>
+</div>
+</section>
+</div>
+<div id="postamble" class="status">
+<p>Published 2026-02-19, last modified 2026-03-16.</p>
+<p>
+  All original content is licensed under a custom <a href="/license/">license</a>.
+</p>
+</div>
+</body>
+</html>

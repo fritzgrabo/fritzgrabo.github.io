@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+     xmlns:georss="http://www.georss.org/georss"
+     xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+     xmlns:media="http://search.yahoo.com/mrss/"><channel>
+  <title>Introducing <code>elfeed-summarize</code></title>
+  <atom:link href="https://foobarbaz/index.xml" rel="self" type="application/rss+xml" />
+  <link>https://foobarbaz/</link>
+  <description><![CDATA[]]></description>
+  <language>en</language>
+  <pubDate>Wed, 18 Feb 2026 19:38:26 +0000</pubDate>
+  <lastBuildDate>Wed, 18 Feb 2026 19:38:26 +0000</lastBuildDate>
+  <generator>Emacs 30.1 Org-mode 9.7.11</generator>
+  <webMaster>hello@fritzgrabo.com (Fritz Grabo)</webMaster>
+  <image>
+    <url>/</url>
+    <title>Introducing <code>elfeed-summarize</code></title>
+    <link>https://foobarbaz/</link>
+  </image>
+
+  <item>
+    <title>On consuming vs. generating</title>
+    <link>https://foobarbaz/index.html#on-consuming-vs-generating</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://foobarbaz/index.html#on-consuming-vs-generating</guid>
+    <pubDate>Wed, 18 Feb 2026 19:38:00 +0000</pubDate>
+
+    <description><![CDATA[<p>
+    As I worked on my <a href="https://foobarbaz/../how-i-talk-to-books-and-source-code/">previous post</a> about a Claude Code skill for interactive training sessions, I got introduced to a thought that stuck with me:
+    the secret super power of large language models isn't generating content, it's consuming it.
+    Writing an essay, drafting code, those are the applications that get most of the attention (and skepticism).
+    But asking a model to read something, then answer questions about it?
+    That's quieter, more reliable, and surprisingly useful in practice.
+    </p>
+
+    <p>
+    This post is about one such use case: summarizing RSS entries to help decide whether I want to read them.
+    </p>
+    ]]></description>
+  </item>
+  <item>
+    <title>The problem</title>
+    <link>https://foobarbaz/index.html#the-problem</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://foobarbaz/index.html#the-problem</guid>
+    <pubDate>Wed, 18 Feb 2026 19:38:00 +0000</pubDate>
+
+    <description><![CDATA[<p>
+    I follow a lot of feeds, and I don't read everything.
+    Instead, I scan the headlines and decide what interests me.
+    Scanning efficiently requires that the headlines actually tell you something, and well, sometimes they don't.
+    </p>
+
+    <p>
+    Here are a few random recent examples from my feed:
+    </p>
+
+    <ul class="org-ul">
+    <li>Is this a good sign?</li>
+    <li>Deep blue</li>
+    <li>Fragments: February 13</li>
+    </ul>
+
+    <p>
+    Opening an entry to find out is often self-defeating — at that point, you've already read it.
+    </p>
+    ]]></description>
+  </item>
+  <item>
+    <title>Enter ~elfeed-summarize~</title>
+    <link>https://foobarbaz/index.html#enter-elfeed-summarize</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://foobarbaz/index.html#enter-elfeed-summarize</guid>
+    <pubDate>Wed, 18 Feb 2026 19:38:00 +0000</pubDate>
+
+    <description><![CDATA[<p>
+    I use the wonderful <a href="https://github.com/skeeto/elfeed">elfeed</a> as a news reader: it's an extensible Emacs package that handles everything from fetching, storing, reading, tagging, to searching RSS feeds.
+    </p>
+
+    <p>
+    As it happens, the similarly wonderful <a href="https://github.com/ahyatt/llm">llm</a> library provides a unified interface to LLM providers -- both local ones via Ollama and cloud services like OpenAI or Gemini.
+    </p>
+
+    <p>
+    Connecting the dots seemed straightforward enough, and a couple of hours later, <a href="https://github.com/fritzgrabo/elfeed-summarize"><code>elfeed-summarize</code></a> adds LLM-powered summaries to elfeed.
+    </p>
+
+    <p>
+    Press <code>z</code> on any entry and a brief summary appears inline — as an overlay below the headline in the search buffer, or as a <code>Summary:</code> header in the show buffer.
+    Press <code>z</code> again to hide it.
+    </p>
+
+    <p>
+    The entry's locally cached content is what gets summarized; no network request to the original article is needed.
+    </p>
+
+
+    <div class="figure">
+    <p><img src="https://foobarbaz/elfeed-search-mode.jpeg" alt="An elfeed search buffer; one of the entries displays a summary" />
+    </p>
+    <p><span class="figure-number">Figure 1: </span>An elfeed search buffer; one of the entries displays a summary</p>
+    </div>
+
+    <p>
+    The goal of a summary here is modest and specific: to help you decide whether an article is worth reading.
+    Not to replace reading it, not to give you a false sense of having read it — just to answer the question <b>should I open this?</b> a little faster.
+    </p>
+    ]]></description>
+  </item>
+  <item>
+    <title>Expanding incrementally</title>
+    <link>https://foobarbaz/index.html#expanding-incrementally</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://foobarbaz/index.html#expanding-incrementally</guid>
+    <pubDate>Wed, 18 Feb 2026 19:38:00 +0000</pubDate>
+
+    <description><![CDATA[<p>
+    Sometimes, a single sentence isn't enough: press <code>Z</code> (capital Z) and the package generates an additional paragraph of detail.
+    Press it again for another.
+    Each expansion builds on what's already there, so you can dial in exactly as much context as you need before committing to the full article.
+    </p>
+
+    <p>
+    This turns out to be useful in a particular way: it lets you approach ambiguous headlines gradually rather than making a binary open-or-skip decision on the first sentence alone.
+    </p>
+    ]]></description>
+  </item>
+  <item>
+    <title>Choosing a provider with ~llm~</title>
+    <link>https://foobarbaz/index.html#choosing-a-provider-with-llm</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://foobarbaz/index.html#choosing-a-provider-with-llm</guid>
+    <pubDate>Wed, 18 Feb 2026 19:38:00 +0000</pubDate>
+
+    <description><![CDATA[<p>
+    For this use case — potentially summarizing many entries in a sitting — a local model through <a href="https://ollama.com">Ollama</a> is the natural choice.
+    It's free to run, it works offline, and your reading habits stay on your machine.
+    A complete setup using Mistral looks like this:
+    </p>
+
+    <div class="org-src-container">
+    <pre class="src src-emacs-lisp">(<span style="color: #800080;">use-package</span> elfeed-summarize
+    <span style="color: #483d8b;">:ensure</span>
+    <span style="color: #483d8b;">:after</span> elfeed
+    <span style="color: #483d8b;">:config</span>
+    (<span style="color: #800080;">setq</span> elfeed-summarize-llm-provider
+    (make-llm-ollama <span style="color: #483d8b;">:chat-model</span> <span style="color: #8b2252;">"mistral:latest"</span>))
+    (elfeed-summarize-mode 1))
+    </pre>
+    </div>
+
+    <p>
+    Of course, if you prefer a cloud provider — OpenAI, Gemini, Claude, or any other supported by <code>llm</code> — the configuration is equally simple.
+    </p>
+    ]]></description>
+  </item>
+  <item>
+    <title>Closing thoughts</title>
+    <link>https://foobarbaz/index.html#closing-thoughts</link>
+    <author>hello@fritzgrabo.com (Fritz Grabo)</author>
+    <guid isPermaLink="false">https://foobarbaz/index.html#closing-thoughts</guid>
+    <pubDate>Wed, 18 Feb 2026 19:38:00 +0000</pubDate>
+
+    <description><![CDATA[<p>
+    None of this would exist without the work of others.
+    Christopher Wellons's <a href="https://github.com/skeeto/elfeed">elfeed</a> is an excellent piece of software that makes extending it genuinely pleasant — its architecture invites exactly this kind of addition.
+    Andrew Hyatt's <a href="https://github.com/ahyatt/llm">llm</a> package saved me from writing provider-specific API calls and from committing to a single service.
+    </p>
+
+    <p>
+    Finally, if you try <code>elfeed-summarize</code> and have thoughts — what works, what doesn't, what you'd want to see — I'd love to <a href="mailto:hello@fritzgrabo.com">hear from you</a>. Thanks!
+    </p>
+    ]]></description>
+  </item>
+</channel>
+</rss>

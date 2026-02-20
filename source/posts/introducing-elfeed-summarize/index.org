@@ -86,3 +86,10 @@ Christopher Wellons's [[https://github.com/skeeto/elfeed][elfeed]] is an excelle
 Andrew Hyatt's [[https://github.com/ahyatt/llm][llm]] library saved me from writing provider-specific API calls and from committing to a single service.
 
 Finally, if you try ~elfeed-summarize~ and have thoughts about what works, what doesn't, what you'd want to see, I'd love to [[mailto:hello@fritzgrabo.com][hear from you]]. Thanks!
+
+* Addendum 2026-02-20
+
+Bob Nadler kindly pointed me to his [[https://github.com/rnadler/elfeed-curate][~elfeed-curate~]] Emacs package (see [[https://bobonmedicaldevicesoftware.com/blog/2025/10/27/elfeed-curate-update-two-new-features/][blog post]]).
+It adds functionality to curate RSS feeds to elfeed, and comes with a summarization feature similar to that of ~elfeed-summarize~.
+Bob's variant is built on ~gptel~ and has slightly different UI mechanics.
+Do check it out!

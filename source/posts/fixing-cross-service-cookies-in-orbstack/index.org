@@ -1,0 +1,132 @@
+#+title: Fixing Cross-Service Cookies in OrbStack
+#+date: [2026-03-07 Sat]
+
+#+html_head_extra: <meta name="twitter:card" content="summary">
+#+html_head_extra: <meta name="twitter:description" content="How to fix broken cross-service cookies in OrbStack by routing all service containers through a single .dev domain using dnsmasq, mkcert, and Caddy.">
+#+html_head_extra: <meta name="twitter:image" content="https://fritzgrabo.com/posts/fixing-cross-service-cookies-in-orbstack/og-image.jpeg">
+#+html_head_extra: <meta name="twitter:site" content="@fritzgrabo">
+#+html_head_extra: <meta name="twitter:title" content="Fixing Cross-Service Cookies in OrbStack">
+#+html_head_extra: <meta property="og:description" content="How to fix broken cross-service cookies in OrbStack by routing all service containers through a single .dev domain using dnsmasq, mkcert, and Caddy.">
+#+html_head_extra: <meta property="og:image" content="https://fritzgrabo.com/posts/fixing-cross-service-cookies-in-orbstack/og-image.jpeg">
+#+html_head_extra: <meta property="og:title" content="Fixing Cross-Service Cookies in OrbStack">
+
+* Wait, what's broken again?
+
+[[https://orbstack.dev][OrbStack]] is a fast, lightweight Docker Desktop alternative for macOS, with a thoughtful UX that makes it a genuine pleasure to use.
+One feature that I particularly love is that it [[https://docs.orbstack.dev/docker/domains][automatically assigns every container a local domain name]]: standalone containers get =container-name.orb.local=; Compose services get =service.project.orb.local=.
+Zero config, no ports to map or manage — sweet!
+
+The catch is that all of these domains live under =.orb.local=, with no way to configure a different TLD.
+That constraint causes a subtle but painful issue when you're developing a web app with its frontend and backend living in separate containers.
+
+Browsers determine cookie boundaries using the [[https://publicsuffix.org/learn/][Public Suffix List]], a community-maintained list of domain suffixes under which individual sites can be registered.
+=.local= appears on that list as a "non-Internet TLD", which means browsers treat it as a boundary in itself — there is no registrable domain beneath it.
+In other words: a cookie set on =frontend.project.orb.local= will not be sent to =backend.project.orb.local=, even when the cookie's =Domain= attribute is explicitly set to =.orb.local=.
+From the browser's perspective, the two hosts share no common registrable domain, and the cookie stays put.
+
+This can bite you in many ways: session state not shared between services, CSRF tokens missing, any feature that depends on cookies flowing freely between your frontend and backend containers.
+
+* Let's fix this
+
+One possible solution is to stop exposing services under separate =.orb.local= domain names and instead route everything through a single, regular domain, such as =myapp.orb.dev=.
+This likely mirrors your production setup anyway: a reverse proxy routes incoming requests by URL path — =/api/*= goes to the backend, everything else to the frontend.
+This keeps the cookie domain simple and the setup easy to reason about.
+
+Three tools work together to make this happen:
+
+- [[https://dnsmasq.org/doc.html][dnsmasq]] resolves all =*.orb.dev= queries to =127.0.0.1= on your local machine
+- [[https://github.com/FiloSottile/mkcert][mkcert]] issues a locally-trusted wildcard TLS certificate for =*.orb.dev=
+- [[https://caddyserver.com][Caddy]] terminates TLS and reverse-proxies each request to the appropriate =*.orb.local= backend
+
+The result: you open =https://myapp.orb.dev= in the browser, dnsmasq resolves it to localhost, Caddy decrypts TLS and forwards the request to the right container, and cookies flow freely.
+
+* Setup
+
+** Prerequisites
+
+#+begin_src sh
+brew install mkcert caddy dnsmasq
+#+end_src
+
+** 1. dnsmasq
+
+Add a wildcard DNS rule so all =*.orb.dev= queries resolve to localhost:
+
+#+begin_src sh
+echo $'\naddress=/orb.dev/127.0.0.1' >> $(brew --prefix)/etc/dnsmasq.conf
+#+end_src
+
+Create a resolver file so macOS sends =.orb.dev= queries to dnsmasq instead of the system DNS:
+
+#+begin_src sh
+sudo mkdir -p /etc/resolver
+echo "nameserver 127.0.0.1" | sudo tee /etc/resolver/orb.dev
+#+end_src
+
+Start dnsmasq (needs to run as root to bind to port 53):
+
+#+begin_src sh
+sudo brew services start dnsmasq
+#+end_src
+
+Verify it's working:
+
+#+begin_src sh
+ping -c1 anything.orb.dev # should resolve to 127.0.0.1
+#+end_src
+
+** 2. TLS Certificate
+
+mkcert creates locally-trusted development certificates by maintaining its own Certificate Authority (CA) and installing it in your system keychain.
+First, install the CA; remember to restart your browser afterwards:
+
+#+begin_src sh
+mkcert -install
+#+end_src
+
+Next, issue a wildcard certificate for =*.orb.dev=; we'll use that with Caddy in the next step:
+
+#+begin_src sh
+mkdir -p ~/.caddy
+mkcert -cert-file ~/.caddy/wildcard.crt -key-file ~/.caddy/wildcard.key "*.orb.dev"
+#+end_src
+
+** 3. Caddy
+
+Edit the default Caddyfile at =$(brew --prefix)/etc/Caddyfile=.
+The =tls= directive requires absolute paths — substitute your actual username for =YOUR_USERNAME=.
+Adjust the =reverse_proxy= targets to match your OrbStack service hostnames:
+
+#+begin_src caddy
+{
+    auto_https off
+}
+
+myapp.orb.dev {
+    tls /Users/YOUR_USERNAME/.caddy/wildcard.crt /Users/YOUR_USERNAME/.caddy/wildcard.key
+
+    reverse_proxy /api/* backend.project.orb.local:80
+    reverse_proxy * frontend.project.orb.local:80
+}
+#+end_src
+
+Finally, start Caddy as a service:
+
+#+begin_src sh
+brew services start caddy
+#+end_src
+
+** 4. Verify
+
+#+begin_src sh
+curl -v https://myapp.orb.dev/
+#+end_src
+
+You should see a valid TLS handshake and a response from your frontend.
+
+* Closing thoughts
+
+Note that this setup routes all services through a single domain by URL path, which works well for a typical frontend/backend split.
+If your app needs separate domains per service, that's straightforward too: add a block to the Caddyfile for each, and the wildcard certificate already has you covered.
+
+As always, if you find any of this useful or have thoughts to share, feel free to [[file:../../contact/index.org][reach out!]]

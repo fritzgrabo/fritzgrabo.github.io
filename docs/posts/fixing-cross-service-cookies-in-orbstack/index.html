@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fixing Cross-Service Cookies in OrbStack</title>
+<meta name="author" content="Fritz Grabo" />
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<!-- Stylesheets -->
+<link rel="stylesheet" href="/styles/main.css" />
+<!-- Scripts -->
+<script src="/scripts/main.js"></script>
+<!-- Icons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-6P59FpnaCnQeHg5YYqgLy.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:description" content="How to fix broken cross-service cookies in OrbStack by routing all service containers through a single .dev domain using dnsmasq, mkcert, and Caddy.">
+<meta name="twitter:image" content="https://fritzgrabo.com/posts/fixing-cross-service-cookies-in-orbstack/og-image.jpeg">
+<meta name="twitter:site" content="@fritzgrabo">
+<meta name="twitter:title" content="Fixing Cross-Service Cookies in OrbStack">
+<meta property="og:description" content="How to fix broken cross-service cookies in OrbStack by routing all service containers through a single .dev domain using dnsmasq, mkcert, and Caddy.">
+<meta property="og:image" content="https://fritzgrabo.com/posts/fixing-cross-service-cookies-in-orbstack/og-image.jpeg">
+<meta property="og:title" content="Fixing Cross-Service Cookies in OrbStack">
+</head>
+<body>
+<div id="preamble" class="status">
+<p>
+  <a href="/">Fritz Grabo</a> /
+  <a href="/#on-work">On Work</a> /
+  <a href="https://raw.githubusercontent.com/fritzgrabo/curriculum-vitae/main/cv.pdf" download="fritz_grabo_cv.pdf">CV</a> /
+  <a href="/now/">Now</a> /
+  <!--<a href="/past/">Past</a> /-->
+  <a href="/posts/">Posts</a>
+  <a href="/posts/rss.xml">(RSS)</a> /
+  <a href="/contact/">Contact</a>
+</p>
+<img class="og-image post-image" loading="lazy" src="og-image.jpeg" />
+</div>
+<div id="content" class="content">
+<h1 class="title">Fixing Cross-Service Cookies in OrbStack
+<br />
+<span class="subtitle">Published 2026-03-07</span>
+</h1>
+<section id="outline-container-wait-what-s-broken-again" class="outline-2">
+<h2 id="wait-what-s-broken-again">Wait, what's broken again?</h2>
+<div class="outline-text-2" id="text-wait-what-s-broken-again">
+<p>
+<a href="https://orbstack.dev">OrbStack</a> is a fast, lightweight Docker Desktop alternative for macOS, with a thoughtful UX that makes it a genuine pleasure to use.
+One feature that I particularly love is that it <a href="https://docs.orbstack.dev/docker/domains">automatically assigns every container a local domain name</a>: standalone containers get <code>container-name.orb.local</code>; Compose services get <code>service.project.orb.local</code>.
+Zero config, no ports to map or manage — sweet!
+</p>
+
+<p>
+The catch is that all of these domains live under <code>.orb.local</code>, with no way to configure a different TLD.
+That constraint causes a subtle but painful issue when you're developing a web app with its frontend and backend living in separate containers.
+</p>
+
+<p>
+Browsers determine cookie boundaries using the <a href="https://publicsuffix.org/learn/">Public Suffix List</a>, a community-maintained list of domain suffixes under which individual sites can be registered.
+<code>.local</code> appears on that list as a "non-Internet TLD", which means browsers treat it as a boundary in itself — there is no registrable domain beneath it.
+In other words: a cookie set on <code>frontend.project.orb.local</code> will not be sent to <code>backend.project.orb.local</code>, even when the cookie's <code>Domain</code> attribute is explicitly set to <code>.orb.local</code>.
+From the browser's perspective, the two hosts share no common registrable domain, and the cookie stays put.
+</p>
+
+<p>
+This can bite you in many ways: session state not shared between services, CSRF tokens missing, any feature that depends on cookies flowing freely between your frontend and backend containers.
+</p>
+</div>
+</section>
+<section id="outline-container-let-s-fix-this" class="outline-2">
+<h2 id="let-s-fix-this">Let's fix this</h2>
+<div class="outline-text-2" id="text-let-s-fix-this">
+<p>
+One possible solution is to stop exposing services under separate <code>.orb.local</code> domain names and instead route everything through a single, regular domain, such as <code>myapp.orb.dev</code>.
+This likely mirrors your production setup anyway: a reverse proxy routes incoming requests by URL path — <code>/api/*</code> goes to the backend, everything else to the frontend.
+This keeps the cookie domain simple and the setup easy to reason about.
+</p>
+
+<p>
+Three tools work together to make this happen:
+</p>
+
+<ul class="org-ul">
+<li><a href="https://dnsmasq.org/doc.html">dnsmasq</a> resolves all <code>*.orb.dev</code> queries to <code>127.0.0.1</code> on your local machine</li>
+<li><a href="https://github.com/FiloSottile/mkcert">mkcert</a> issues a locally-trusted wildcard TLS certificate for <code>*.orb.dev</code></li>
+<li><a href="https://caddyserver.com">Caddy</a> terminates TLS and reverse-proxies each request to the appropriate <code>*.orb.local</code> backend</li>
+</ul>
+
+<p>
+The result: you open <code>https://myapp.orb.dev</code> in the browser, dnsmasq resolves it to localhost, Caddy decrypts TLS and forwards the request to the right container, and cookies flow freely.
+</p>
+</div>
+</section>
+<section id="outline-container-setup" class="outline-2">
+<h2 id="setup">Setup</h2>
+<div class="outline-text-2" id="text-setup">
+</div>
+<div id="outline-container-prerequisites" class="outline-3">
+<h3 id="prerequisites">Prerequisites</h3>
+<div class="outline-text-3" id="text-prerequisites">
+<div class="org-src-container">
+<pre class="src src-sh">brew install mkcert caddy dnsmasq
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-1-dnsmasq" class="outline-3">
+<h3 id="1-dnsmasq">1. dnsmasq</h3>
+<div class="outline-text-3" id="text-1-dnsmasq">
+<p>
+Add a wildcard DNS rule so all <code>*.orb.dev</code> queries resolve to localhost:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #483d8b;">echo</span> $<span style="color: #8b2252;">'\naddress=/orb.dev/127.0.0.1'</span> &gt;&gt; $(brew --prefix)/etc/dnsmasq.conf
+</pre>
+</div>
+
+<p>
+Create a resolver file so macOS sends <code>.orb.dev</code> queries to dnsmasq instead of the system DNS:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">sudo mkdir -p /etc/resolver
+<span style="color: #483d8b;">echo</span> <span style="color: #8b2252;">"nameserver 127.0.0.1"</span> | sudo tee /etc/resolver/orb.dev
+</pre>
+</div>
+
+<p>
+Start dnsmasq (needs to run as root to bind to port 53):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">sudo brew services start dnsmasq
+</pre>
+</div>
+
+<p>
+Verify it's working:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">ping -c1 anything.orb.dev <span style="color: #b22222;"># </span><span style="color: #b22222;">should resolve to 127.0.0.1</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-2-tls-certificate" class="outline-3">
+<h3 id="2-tls-certificate">2. TLS Certificate</h3>
+<div class="outline-text-3" id="text-2-tls-certificate">
+<p>
+mkcert creates locally-trusted development certificates by maintaining its own Certificate Authority (CA) and installing it in your system keychain.
+First, install the CA; remember to restart your browser afterwards:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">mkcert -install
+</pre>
+</div>
+
+<p>
+Next, issue a wildcard certificate for <code>*.orb.dev</code>; we'll use that with Caddy in the next step:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">mkdir -p ~/.caddy
+mkcert -cert-file ~/.caddy/wildcard.crt -key-file ~/.caddy/wildcard.key <span style="color: #8b2252;">"*.orb.dev"</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-3-caddy" class="outline-3">
+<h3 id="3-caddy">3. Caddy</h3>
+<div class="outline-text-3" id="text-3-caddy">
+<p>
+Edit the default Caddyfile at <code>$(brew --prefix)/etc/Caddyfile</code>.
+The <code>tls</code> directive requires absolute paths — substitute your actual username for <code>YOUR_USERNAME</code>.
+Adjust the <code>reverse_proxy</code> targets to match your OrbStack service hostnames:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-caddy">{
+    auto_https off
+}
+
+myapp.orb.dev {
+    tls /Users/YOUR_USERNAME/.caddy/wildcard.crt /Users/YOUR_USERNAME/.caddy/wildcard.key
+
+    reverse_proxy /api/* backend.project.orb.local:80
+    reverse_proxy * frontend.project.orb.local:80
+}
+</pre>
+</div>
+
+<p>
+Finally, start Caddy as a service:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">brew services start caddy
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-4-verify" class="outline-3">
+<h3 id="4-verify">4. Verify</h3>
+<div class="outline-text-3" id="text-4-verify">
+<div class="org-src-container">
+<pre class="src src-sh">curl -v https://myapp.orb.dev/
+</pre>
+</div>
+
+<p>
+You should see a valid TLS handshake and a response from your frontend.
+</p>
+</div>
+</div>
+</section>
+<section id="outline-container-closing-thoughts" class="outline-2">
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<div class="outline-text-2" id="text-closing-thoughts">
+<p>
+Note that this setup routes all services through a single domain by URL path, which works well for a typical frontend/backend split.
+If your app needs separate domains per service, that's straightforward too: add a block to the Caddyfile for each, and the wildcard certificate already has you covered.
+</p>
+
+<p>
+As always, if you find any of this useful or have thoughts to share, feel free to <a href="../../contact/">reach out!</a>
+</p>
+</div>
+</section>
+</div>
+<div id="postamble" class="status">
+<p>Published 2026-03-07, last modified 2026-03-16.</p>
+<p>
+  All original content is licensed under a custom <a href="/license/">license</a>.
+</p>
+</div>
+</body>
+</html>

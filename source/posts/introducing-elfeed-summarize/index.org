@@ -1,5 +1,6 @@
 #+title: Introducing ~elfeed-summarize~
 #+date: [2026-02-19 Thu]
+#+description: Add LLM-powered inline summaries to elfeed.
 #+filetags: emacs
 
 #+html_head_extra: <meta name="twitter:card" content="summary">

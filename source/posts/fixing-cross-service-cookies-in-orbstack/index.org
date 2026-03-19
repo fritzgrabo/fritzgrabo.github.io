@@ -1,5 +1,6 @@
 #+title: Fixing Cross-Service Cookies in OrbStack
 #+date: [2026-03-07 Sat]
+#+description: How to fix broken cross-service cookies in OrbStack by routing all service containers through a single .dev domain using dnsmasq, mkcert, and Caddy.
 
 #+html_head_extra: <meta name="twitter:card" content="summary">
 #+html_head_extra: <meta name="twitter:description" content="How to fix broken cross-service cookies in OrbStack by routing all service containers through a single .dev domain using dnsmasq, mkcert, and Caddy.">

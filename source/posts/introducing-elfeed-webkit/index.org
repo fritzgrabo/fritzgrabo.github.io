@@ -1,5 +1,6 @@
 #+title: Introducing ~elfeed-webkit~
 #+date: [2023-05-22 Mon]
+#+description: Render elfeed entries in embedded webkit widgets.
 #+filetags: emacs
 
 #+html_head_extra: <meta name="twitter:card" content="summary">

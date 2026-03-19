@@ -1,5 +1,6 @@
 #+title: ~acp2ollama~ in Emacs for fun and profit
 #+date: [2026-03-19 Thu]
+#+description: A hands-on look at using acp2ollama to connect ACP agents to Emacs packages that speak the Ollama API — with results ranging from 'works great' to 'probably don't bother.'
 #+filetags: emacs
 
 #+html_head_extra: <meta name="twitter:card" content="summary">

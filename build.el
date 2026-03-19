@@ -91,7 +91,6 @@
    (org-list-to-subtree list 1 '(:icount "" :istart ""))))
 
 ;; TODO: Simplify.
-;; TODO: Decide how much of the post I want to put into the RSS entry's description.
 (defun site--format-rss-feed-entry (entry style project)
   "ENTRY STYLE PROJECT. Style is assumed to be list."
   (let ((file (org-publish--expand-file-name entry project))
@@ -103,7 +102,15 @@
       (org-set-property "RSS_PERMALINK" (replace-regexp-in-string "/index.org$" "/" entry))
       (org-set-property "RSS_TITLE" title)
       (org-set-property "PUBDATE" date)
-      ;; (insert-file-contents file)
+
+      ;; TODO: Decide how much of the post I want to put into the RSS entry's description.
+      ;; TODO: Alternatively, (insert-file-contents file)
+      (when-let* ((description (with-temp-buffer
+                                 (org-mode)
+                                 (insert-file-contents file)
+                                 (cadr (assoc "DESCRIPTION" (org-collect-keywords '("description")))))))
+        (insert description))
+
       (buffer-string))))
 
 (defun site--exclude-non-emacs-posts (project-plist)

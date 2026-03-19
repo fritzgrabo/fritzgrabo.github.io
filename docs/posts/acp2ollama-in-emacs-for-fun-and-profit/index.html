@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>~acp2ollama~ in Emacs for fun and profit</title>
+<meta name="author" content="Fritz Grabo" />
+<meta name="generator" content="Org Mode" />
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<!-- Stylesheets -->
+<link rel="stylesheet" href="/styles/main.css" />
+<!-- Scripts -->
+<script src="/scripts/main.js"></script>
+<!-- Icons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-6P59FpnaCnQeHg5YYqgLy.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:description" content="A hands-on look at using acp2ollama to connect ACP agents to Emacs packages that speak the Ollama API — with results ranging from 'works great' to 'probably don't bother.'">
+<meta name="twitter:image" content="https://fritzgrabo.com/posts/acp2ollama-in-emacs-for-fun-and-profit/og-image.jpeg">
+<meta name="twitter:site" content="@fritzgrabo">
+<meta name="twitter:title" content="acp2ollama in Emacs for fun and profit">
+<meta property="og:description" content="A hands-on look at using acp2ollama to connect ACP agents to Emacs packages that speak the Ollama API — with results ranging from 'works great' to 'probably don't bother.'">
+<meta property="og:image" content="https://fritzgrabo.com/posts/acp2ollama-in-emacs-for-fun-and-profit/og-image.jpeg">
+<meta property="og:title" content="acp2ollama in Emacs for fun and profit">
+</head>
+<body>
+<div id="preamble" class="status">
+<p>
+  <a href="/">Fritz Grabo</a> /
+  <a href="/#on-work">On Work</a> /
+  <a href="https://raw.githubusercontent.com/fritzgrabo/curriculum-vitae/main/cv.pdf" download="fritz_grabo_cv.pdf">CV</a> /
+  <a href="/now/">Now</a> /
+  <!--<a href="/past/">Past</a> /-->
+  <a href="/posts/">Posts</a>
+  <a href="/posts/rss.xml">(RSS)</a> /
+  <a href="/contact/">Contact</a>
+</p>
+<img class="og-image post-image" loading="lazy" src="og-image.jpeg" />
+</div>
+<div id="content" class="content">
+<h1 class="title"><code>acp2ollama</code> in Emacs for fun and profit
+<br />
+<span class="subtitle">Published 2026-03-19</span>
+</h1>
+<p>
+I recently published <a href="https://github.com/fritzgrabo/acp2ollama"><code>acp2ollama</code></a>, a command-line tool that wraps an <a href="https://agentclientprotocol.com/">ACP</a> agent and exposes it as an <a href="https://docs.ollama.com/api/introduction">Ollama</a>-compatible HTTP server, so any tool that speaks the Ollama API can talk to the agent instead.
+</p>
+
+<p>
+This post shows what that looks like in practice in Emacs, where a healthy ecosystem of AI-powered packages supports the Ollama API out of the box.
+The results are mixed, and the rest of this post picks examples across the spectrum to illustrate.
+</p>
+<section id="outline-container-what-acp2ollama-does-and-doesn-t-do" class="outline-2">
+<h2 id="what-acp2ollama-does-and-doesn-t-do">What <code>acp2ollama</code> does (and doesn't do)</h2>
+<div class="outline-text-2" id="text-what-acp2ollama-does-and-doesn-t-do">
+<p>
+Two fundamental architectural mismatches are worth understanding before we start, because they shape what works well and what doesn't.
+</p>
+
+<p>
+<b>Stateful vs. stateless.</b>
+The Ollama API is stateless: clients resend the full message history on every request.
+ACP agents are stateful: they accumulate context across turns and only receive new messages.
+<code>acp2ollama</code> bridges this with a pool of long-lived ACP sessions.
+Spawning a new agent session is slow so it pre-warms sessions in the background to ensure new conversations can start immediately.
+It also fingerprints incoming message histories to match continuation requests to the session that already holds the right context, so only new messages are forwarded to the agent.
+</p>
+
+<p>
+<b>Tool use.</b>
+Ollama clients declare available tools in the request and expect the model to ask the client to call them.
+ACP agents ship with their own tools and execute them autonomously.
+<code>acp2ollama</code> silently ignores incoming tool declarations and never asks to execute tools on the client side.
+Use <code>--session-mode</code> to pre-approve operations your agent needs; without it, all permission requests are denied and the agent can't do anything that requires approval.
+</p>
+
+<p>
+With that out of the way, let's set everything up so we can take it for a spin!
+</p>
+</div>
+</section>
+<section id="outline-container-setup" class="outline-2">
+<h2 id="setup">Setup</h2>
+<div class="outline-text-2" id="text-setup">
+<p>
+Build <code>acp2ollama</code> from source (requires Go 1.24+):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">git clone https://github.com/fritzgrabo/acp2ollama
+<span style="color: #483d8b;">cd</span> acp2ollama
+
+go build -o acp2ollama .
+</pre>
+</div>
+
+<p>
+Run <code>acp2ollama --help</code> to see all available options and their defaults.
+There are quite a few knobs to tweak: pool sizes, warmup counts, session TTLs, and more.
+Getting them right for your specific use case can make a real difference in responsiveness.
+</p>
+
+<p>
+For this post, I'll use a fictional ACP agent called <code>shimmy</code>, started with the command <code>shimmy-acp</code>.
+Make sure to check your own agent's terms of service before connecting it to a third-party client.
+</p>
+
+<p>
+Let's start the server, pointing at our ACP agent:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">acp2ollama -- shimmy-acp
+</pre>
+</div>
+
+<p>
+This binds to port <code>11434</code> by default, so any Ollama client pointing at <code>localhost</code> will find it without further configuration.
+</p>
+
+<p>
+Before setting up the Emacs packages below, find out which models your agent provides:
+run it directly once, or just start <code>acp2ollama</code> with <code>--log-level</code> debug and check the output: it prints the available models when it pre-warms its first session.
+You'll need a valid model name in each of the package configurations that follow.
+</p>
+</div>
+</section>
+<section id="outline-container-works-well-chatting-in-gptel" class="outline-2">
+<h2 id="works-well-chatting-in-gptel">Works well: chatting in <code>gptel</code></h2>
+<div class="outline-text-2" id="text-works-well-chatting-in-gptel">
+<p>
+There's a host of packages in Emacs that allows for chatting with LLMs in distinct conversation buffers.
+Check out <a href="https://github.com/xenodium/chatgpt-shell"><code>chatgpt-shell</code></a> for a package that's dedicated to this usecase, or <a href="https://github.com/karthinks/gptel"><code>gptel</code></a> or <a href="https://github.com/captainflasmr/ollama-buddy"><code>ollama-buddy</code></a> for packages that offer a more generic integration.
+</p>
+
+<p>
+Let's give <code>gptel</code> a whirl; connecting it to <code>acp2ollama</code> is straightforward:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #800080;">use-package</span> gptel
+  <span style="color: #483d8b;">:ensure</span>
+  <span style="color: #483d8b;">:config</span>
+  (gptel-make-ollama <span style="color: #8b2252;">"shimmy"</span>
+    <span style="color: #483d8b;">:host</span> <span style="color: #8b2252;">"localhost:11434"</span>
+    <span style="color: #483d8b;">:models</span> '(shimmy)
+    <span style="color: #483d8b;">:stream</span> t))
+</pre>
+</div>
+
+<p>
+Set this as your default backend and model, or select it interactively with <code>M-x gptel-menu</code>.
+</p>
+
+<p>
+Because <code>acp2ollama</code> maintains stateful sessions, multi-turn conversations in <code>gptel</code>'s chat buffers work as you'd expect: context accumulates across turns, and the agent behaves like it does in its native interface.
+Response times are reasonable too, since sessions are reused rather than spawned fresh on every request.
+</p>
+
+
+<div class="figure">
+<p><img src="gptel.jpeg" alt="A gptel session buffer showing a conversation with shimmy" />
+</p>
+<p><span class="figure-number">Figure 1: </span>A gptel session buffer showing a conversation with shimmy</p>
+</div>
+</div>
+</section>
+<section id="outline-container-barely-works-completion-with-minuet-ai" class="outline-2">
+<h2 id="barely-works-completion-with-minuet-ai">Barely works: completion with <code>minuet-ai</code></h2>
+<div class="outline-text-2" id="text-barely-works-completion-with-minuet-ai">
+<p>
+<a href="https://github.com/milanglacier/minuet-ai"><code>minuet-ai</code></a> provides AI-powered code completion in Emacs.
+It supports Ollama, so connecting it to <code>acp2ollama</code> is possible.
+The caveats apply in full here, and the result is instructive.
+</p>
+
+<p>
+ACP agents are conversational tools, not completion engines.
+They're not optimized for the fill-in-the-middle task that code completion requires, and they're slow: where a dedicated completion model might respond in milliseconds, an ACP agent takes seconds.
+With <code>minuet-ai</code>'s default setting of triggering frequently, the experience is not usable.
+</p>
+
+<p>
+The basic setup uses <code>minuet-ai</code>'s <code>openai-fim-compatible</code> provider, which maps to <code>acp2ollama</code>'s <code>/v1/completions</code> endpoint and returns multiple completion candidates in a single call.
+The trick that makes it barely usable is to disable automatic triggering entirely, so completions are only requested when you explicitly ask for them:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #800080;">use-package</span> minuet
+  <span style="color: #483d8b;">:ensure</span>
+  <span style="color: #483d8b;">:config</span>
+  (<span style="color: #800080;">setq</span> minuet-provider 'openai-fim-compatible)
+  (plist-put minuet-openai-fim-compatible-options <span style="color: #483d8b;">:end-point</span> <span style="color: #8b2252;">"http://localhost:11434/v1/completions"</span>)
+  (plist-put minuet-openai-fim-compatible-options <span style="color: #483d8b;">:model</span> <span style="color: #8b2252;">"shimmy"</span>)
+  (plist-put minuet-openai-fim-compatible-options <span style="color: #483d8b;">:name</span> <span style="color: #8b2252;">"shimmy"</span>)
+  (plist-put minuet-openai-fim-compatible-options <span style="color: #483d8b;">:api-key</span> <span style="color: #8b2252;">"TERM"</span>)
+
+  <span style="color: #b22222;">;; </span><span style="color: #b22222;">Disable automatic triggering; use manual completion only.
+</span>  (<span style="color: #800080;">setq</span> minuet-auto-suggestion-debounce-delay nil)
+  (define-key minuet-mode-map (kbd <span style="color: #8b2252;">"M-TAB"</span>) #'minuet-show-suggestion))
+</pre>
+</div>
+
+<p>
+With manual triggering, the agent's response time is noticeable, but not disruptive.
+In practice, though, you'd rather have the right tool.
+ACP agents are a poor fit for latency-sensitive, high-frequency tasks.
+</p>
+
+
+<div class="figure">
+<p><img src="minuet-ai.jpeg" alt="A scratch buffer showing auto-completions via minuet-ai" />
+</p>
+<p><span class="figure-number">Figure 2: </span>A scratch buffer showing auto-completions via minuet-ai</p>
+</div>
+</div>
+</section>
+<section id="outline-container-works-but-probably-overkill-elfeed-summarize" class="outline-2">
+<h2 id="works-but-probably-overkill-elfeed-summarize">Works, but probably overkill: <code>elfeed-summarize</code></h2>
+<div class="outline-text-2" id="text-works-but-probably-overkill-elfeed-summarize">
+<p>
+<a href="https://github.com/fritzgrabo/elfeed-summarize"><code>elfeed-summarize</code></a> adds LLM-powered summaries to <a href="https://github.com/skeeto/elfeed">elfeed</a>, the extensible Emacs RSS reader: a low-frequency, latency-tolerant task, which makes it a reasonable fit for <code>acp2ollama</code>.
+</p>
+
+<p>
+The package is built on Andrew Hyatt's <a href="https://github.com/ahyatt/llm"><code>llm</code></a> library, which provides a unified interface to LLM providers, including Ollama.
+Connecting is a matter of pointing the <code>llm-ollama</code> provider at the right host and model:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #800080;">use-package</span> elfeed-summarize
+  <span style="color: #483d8b;">:ensure</span>
+  <span style="color: #483d8b;">:after</span> elfeed
+  <span style="color: #483d8b;">:config</span>
+  (<span style="color: #800080;">setq</span> elfeed-summarize-llm-provider
+        (make-llm-ollama
+          <span style="color: #483d8b;">:host</span> <span style="color: #8b2252;">"localhost"</span>
+          <span style="color: #483d8b;">:port</span> 11434
+          <span style="color: #483d8b;">:chat-model</span> <span style="color: #8b2252;">"shimmy"</span>))
+  (elfeed-summarize-mode 1))
+</pre>
+</div>
+
+<p>
+The setup works without complaint, and the summaries are good.
+That said, summarizing RSS entries is a simple task, handled just as well by a local model like <code>llama3</code> running in a real Ollama instance.
+Routing it through <code>shimmy</code> gets the job done, but it's a lot of horsepower for something a lightweight local model does quietly in the background.
+</p>
+
+
+<div class="figure">
+<p><img src="elfeed-summarize.jpeg" alt="An elfeed buffer showing a summary of an RSS item generated via elfeed-summarize" />
+</p>
+<p><span class="figure-number">Figure 3: </span>An elfeed buffer showing a summary of an RSS item generated via elfeed-summarize</p>
+</div>
+
+<p>
+The pattern shown above applies to the many other Emacs packages built on <code>llm</code>: <a href="https://github.com/s-kostyaev/ellama">ellama</a>, <a href="https://github.com/douo/magit-gptcommit">magit-gptcommit</a>, <a href="https://github.com/ahyatt/ekg/">ekg</a> and others.
+If a package exposes an <code>llm</code>-compatible provider setting, swapping in <code>make-llm-ollama</code> pointed at <code>acp2ollama</code> is all it takes.
+For simple tasks, though, it's worth asking whether a local model might serve just as well.
+</p>
+</div>
+</section>
+<section id="outline-container-closing-thoughts" class="outline-2">
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<div class="outline-text-2" id="text-closing-thoughts">
+<p>
+<code>acp2ollama</code> is experimental, a proof of concept rather than a daily driver: the caveats in its README are real.
+</p>
+
+<p>
+For conversational use cases in Emacs, it makes a surprising number of things work with very little configuration and, well, without burning through API tokens.
+</p>
+
+<p>
+It's a fresh release and I plan to use it for a while to see what can be improved.
+I'm curious to see what use cases others run into.
+</p>
+
+<p>
+If you try it and have thoughts about what works, what doesn't, I'd love to <a href="mailto:hello@fritzgrabo.com">hear from you</a>.
+</p>
+</div>
+</section>
+</div>
+<div id="postamble" class="status">
+<p>Published 2026-03-19, last modified 2026-03-23.</p>
+<p>
+  All original content is licensed under a custom <a href="/license/">license</a>.
+</p>
+</div>
+</body>
+</html>

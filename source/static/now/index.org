@@ -1,7 +1,13 @@
 #+title: What I'm doing now
 #+description: What I'm doing now | Fritz Grabo
 
-Updated March 2026.
+Updated May 2026.
+
+* Back at work @@html:<small class="now-date">@@05/2026@@html:</small>@@
+
+I'm back to something close to full-time work: two startups at a fixed number of hours per month each, plus the occasional small gig on the side. All engagements are interesting (though for entirely different reasons) and there's something particularly nice about having a steady rhythm again. Good to be back.
+
+A new challenge is context switching at an intensity I haven't experienced before. Working across multiple clients in different business and tech domains, with a focus on different levels of detail simultaneously, means I've had to become very deliberate about how I block my time and swap out mental RAM. It's a skill I'm actively developing.
 
 * Comprehension debt @@html:<small class="now-date">@@02/2026@@html:</small>@@
 

@@ -1,5 +1,6 @@
 #+title: Introducing ~elfeed-summarize~
 #+date: [2026-02-19 Thu]
+#+last_modified: [2026-03-16 Mon]
 #+description: Add LLM-powered inline summaries to elfeed.
 #+filetags: emacs
 

@@ -22,7 +22,6 @@ serve:
 
 .PHONY: clean
 clean:
-	@rm -rf .timestamps
 	@rm -rf $(sources-build-artefacts)
 	@rm -rf docs
 

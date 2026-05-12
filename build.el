@@ -44,6 +44,25 @@
 
 ;; Posts: Helpers
 
+(defun site--post-date-string (file)
+  "Return the #+last_modified or #+date keyword value from FILE."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (let ((case-fold-search t))
+      (or (and (re-search-forward "^#\\+last_modified:\\s-*\\(\\[.*?\\]\\)" nil t)
+               (match-string 1))
+          (and (goto-char (point-min))
+               (re-search-forward "^#\\+date:\\s-*\\(\\[.*?\\]\\)" nil t)
+               (match-string 1))))))
+
+(defun site--restore-post-mtimes ()
+  "Set each post's mtime from its #+last_modified: or #+date: keyword."
+  (let ((posts-dir (expand-file-name "posts" site--source-directory)))
+    (dolist (file (directory-files-recursively posts-dir "^index\\.org$"))
+      (unless (string= (file-name-directory file) (file-name-as-directory posts-dir))
+        (when-let* ((date-string (site--post-date-string file)))
+          (set-file-times file (org-time-string-to-time date-string)))))))
+
 (defun site--org-html-publish-post-to-html (plist filename pub-dir)
   "PLIST FILENAME PUB-DIR."
   (let* ((format-string (format "Published %s" site--date-format-string))
@@ -265,11 +284,12 @@
         (org-html-stable-ids t)
         (org-html-validation-link nil)
 
-        (org-publish-timestamp-directory ".timestamps/")
+        (org-publish-use-timestamps-flag nil)
         (org-publish-project-alist site--project-alist)
 
         (user-full-name site--author)
         (user-mail-address site--email))
+    (site--restore-post-mtimes)
     (org-html-stable-ids-add)
     (org-publish "site" t)
     (kill-emacs)))

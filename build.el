@@ -99,6 +99,41 @@
 
 ;; Posts: RSS Helpers
 
+(defun site--normalize-rss-channel-dates ()
+  "Normalize channel dates in all RSS feeds in `site--project-alist'."
+  (dolist (project site--project-alist)
+    (let ((plist (cdr project)))
+      (when (eq (plist-get plist :publishing-function) #'site--org-rss-publish-sitemap-to-rss)
+        (site--normalize-rss-file-channel-dates
+         (expand-file-name
+          (concat (file-name-sans-extension (plist-get plist :sitemap-filename))
+                  "." (plist-get plist :rss-extension))
+          (plist-get plist :publishing-directory)))))))
+
+(defun site--normalize-rss-file-channel-dates (rss-file)
+  "Set channel pubDate/lastBuildDate in RSS-FILE to the most recent item date."
+  (with-temp-buffer
+    (insert-file-contents rss-file)
+    (let ((items-start (save-excursion
+                         (goto-char (point-min))
+                         (and (re-search-forward "<item>" nil t)
+                              (match-beginning 0)))))
+      (when items-start
+        (let ((most-recent nil))
+          (goto-char items-start)
+          (while (re-search-forward "<pubDate>\\([^<]+\\)</pubDate>" nil t)
+            (let ((time (date-to-time (match-string 1))))
+              (when (or (null most-recent) (time-less-p most-recent time))
+                (setq most-recent time))))
+          (when most-recent
+            (let ((date-string (let ((system-time-locale "C"))
+                                 (format-time-string "%a, %d %b %Y %T %z" most-recent))))
+              (dolist (tag '("pubDate" "lastBuildDate"))
+                (goto-char (point-min))
+                (when (re-search-forward (format "<%s>[^<]*</%s>" tag tag) items-start t)
+                  (replace-match (format "<%s>%s</%s>" tag date-string tag))))
+              (write-region (point-min) (point-max) rss-file))))))))
+
 (defun site--org-rss-publish-sitemap-to-rss (plist filename pub-dir)
   "PLIST FILENAME PUB-DIR."
   (site--publish-sitemap-filename-only #'org-rss-publish-to-rss plist filename pub-dir))
@@ -292,6 +327,7 @@
     (site--restore-post-mtimes)
     (org-html-stable-ids-add)
     (org-publish "site" t)
+    (site--normalize-rss-channel-dates)
     (kill-emacs)))
 
 (defun serve ()

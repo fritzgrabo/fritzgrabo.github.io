@@ -1,6 +1,6 @@
-source/posts/rss.org*
-source/posts/rss-emacs.org*
-source/posts/index.org
+docs/posts/rss.org*
+docs/posts/rss-emacs.org*
+docs/posts/index.org
 source/static/styles/highlight.css
 source/static/scripts/highlight.min.js
 

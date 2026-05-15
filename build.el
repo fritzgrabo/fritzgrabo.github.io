@@ -7,6 +7,7 @@
 (push (expand-file-name "./contrib") load-path)
 
 (require 'cl-lib)
+(require 'filenotify)
 
 (require 'org)
 (require 'ox-html-stable-ids)
@@ -213,10 +214,9 @@
          :base-extension "org"
          :publishing-directory (expand-file-name "posts" site--build-directory)
          :recursive t
-         :exclude "^\\(index\\|^rss\\|^rss-emacs\\).org"
          :publishing-function #'site--org-html-publish-sitemap-to-html
          :auto-sitemap t
-         :sitemap-filename "index.org"
+         :sitemap-filename (expand-file-name "index.org" (expand-file-name "posts" site--build-directory))
          :sitemap-title site--title
          :sitemap-style 'list
          :sitemap-sort-files 'anti-chronologically
@@ -235,11 +235,10 @@
          :base-extension "org"
          :publishing-directory (expand-file-name "posts" site--build-directory)
          :recursive t
-         :exclude "^\\(index\\|rss\\|rss-emacs\\).org"
          :publishing-function #'site--org-rss-publish-sitemap-to-rss
          :html-link-home (concat site--url "/posts/")
          :auto-sitemap t
-         :sitemap-filename "rss.org"
+         :sitemap-filename (expand-file-name "rss.org" (expand-file-name "posts" site--build-directory))
          :sitemap-title site--title
          :sitemap-style 'list
          :sitemap-sort-files 'anti-chronologically
@@ -254,11 +253,10 @@
          :publishing-directory (expand-file-name "posts" site--build-directory)
          :preparation-function #'site--exclude-non-emacs-posts
          :recursive t
-         :exclude "^\\(index\\|rss\\|rss-emacs\\).org"
          :publishing-function #'site--org-rss-publish-sitemap-to-rss
          :html-link-home (concat site--url "/posts/")
          :auto-sitemap t
-         :sitemap-filename "rss-emacs.org"
+         :sitemap-filename (expand-file-name "rss-emacs.org" (expand-file-name "posts" site--build-directory))
          :sitemap-title site--title
          :sitemap-style 'list
          :sitemap-sort-files 'anti-chronologically
@@ -301,8 +299,23 @@
    (list "site"
          :components '("posts-org" "posts-sitemap" "posts-assets" "posts-rss" "posts-rss-emacs" "static-org-homepage" "static-org-rest" "static-assets" "cname"))))
 
-(defun build ()
-  "Foobar."
+(defvar site--watch-timer nil)
+(defvar site--watch-descriptors nil)
+
+(defun site--watch-callback (event)
+  "Rebuild on file change EVENT, debounced."
+  (when (memq (nth 1 event) '(changed created deleted renamed))
+    (unless site--watch-timer
+      (setq site--watch-timer
+            (run-with-timer 1.0 nil
+                            (lambda ()
+                              (setq site--watch-timer nil)
+                              (condition-case err
+                                  (site--rebuild)
+                                (error (message "Rebuild failed: %s" err)))))))))
+
+(defun site--rebuild ()
+  "Rebuild the site without killing Emacs."
   (let ((org-export-time-stamp-file nil)
         (org-export-with-section-numbers nil)
         (org-export-with-toc nil)
@@ -328,12 +341,22 @@
     (org-html-stable-ids-add)
     (org-publish "site" t)
     (site--normalize-rss-channel-dates)
-    (kill-emacs)))
+    (message "Site rebuilt at %s" (current-time-string))))
+
+(defun build ()
+  "Build the site and exit."
+  (site--rebuild)
+  (kill-emacs))
 
 (defun serve ()
-  "Foobar."
+  "Serve the site with auto-rebuild on source change."
   (let ((httpd-host "0.0.0.0")
         (httpd-port 8088))
+    (setq site--watch-descriptors
+          (mapcar (lambda (dir)
+                    (file-notify-add-watch dir '(change) #'site--watch-callback))
+                  (directory-files-recursively site--source-directory "" t)))
+    (message "Watching %s for changes..." site--source-directory)
     (httpd-serve-directory site--build-directory)))
 
 (provide 'build)
